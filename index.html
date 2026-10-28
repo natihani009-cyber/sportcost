@@ -1,0 +1,1968 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SportCost</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Work out what your sport really costs per year and per month, see where the money goes, and compare a change before you make it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&display=swap">
+<style>
+/* SportCost design system
+   Layout: asymmetric. Large type on the left, a working ledger on the right.
+   In the app, inputs run left and live results stay in view on the right.
+   One accent (signal orange) is used for fills and marks, never for body text. */
+:root {
+  color-scheme: light;
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --ink: #0d1117;
+  --ink-2: #444b56;
+  --ink-3: #626a77;
+  --line: #e0e3e8;
+  --line-strong: #c4c9d1;
+  --accent: #ff5b14;
+  --accent-press: #e84e0a;
+  --accent-soft: #ffe9df;
+  --on-accent: #0d1117;
+  --mark-muted: #868e9b;
+  --error: #c0261b;
+  --error-soft: #fdecea;
+  --ok: #0b6b3a;
+
+  --font: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --r: 6px;
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+[id] { scroll-margin-top: 72px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.55;
+  font-feature-settings: "ss01" 0;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3, p, dl, dd, figure { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+a { color: inherit; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.wrap {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter-r);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 18px;
+  border: 1px solid var(--line-strong); border-radius: var(--r);
+  background: var(--surface); color: var(--ink);
+  font-weight: 500; font-size: .9375rem; line-height: 1; cursor: pointer;
+  text-decoration: none; white-space: nowrap;
+  transition: background-color .15s, border-color .15s;
+}
+.btn:hover { border-color: var(--ink); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.btn-primary:hover { background: var(--accent-press); border-color: var(--accent-press); }
+.btn-dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn-dark:hover { background: #262d38; }
+.btn-sm { min-height: 36px; padding: 0 12px; font-size: .875rem; }
+.btn-text { border-color: transparent; background: transparent; padding-inline: 8px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
+.btn-text:hover { border-color: transparent; text-decoration-color: var(--ink); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+/* ---------- header ---------- */
+.top { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 30; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; font-size: 1.125rem; letter-spacing: -.02em; text-decoration: none; }
+.brand-mark { width: 22px; height: 22px; display: block; }
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav a:not(.btn) { padding: 10px 12px; text-decoration: none; font-size: .9375rem; color: var(--ink-2); border-radius: var(--r); }
+.nav a:not(.btn):hover { color: var(--ink); }
+
+/* ---------- hero ---------- */
+.hero { padding-block: clamp(40px, 7vw, 96px) clamp(48px, 7vw, 88px); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 80px); align-items: end; }
+.hero h1 {
+  font-size: clamp(2.9rem, 7.4vw, 6.25rem);
+  line-height: .94; letter-spacing: -.055em; font-weight: 650;
+}
+.hero-lede { margin-top: 28px; max-width: 34em; font-size: clamp(1.0625rem, 1.5vw, 1.25rem); color: var(--ink-2); line-height: 1.5; }
+.hero-cta { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+.ledger { background: var(--surface); border: 1px solid var(--ink); border-radius: var(--r); }
+.ledger-head { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.ledger-head strong { font-weight: 600; font-size: .9375rem; }
+.ledger-head span { color: var(--ink-3); font-size: .8125rem; }
+.ledger-rows { list-style: none; margin: 0; padding: 4px 20px; }
+.ledger-rows li { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: .9375rem; }
+.ledger-rows li:last-child { border-bottom: 0; }
+.ledger-rows .amt, .num { font-variant-numeric: tabular-nums; }
+.ledger-total { padding: 18px 20px 20px; border-top: 1px solid var(--ink); display: grid; gap: 14px; }
+.ledger-total .k { font-size: .875rem; color: var(--ink-2); }
+.ledger-total .big { font-size: clamp(2.5rem, 4.4vw, 3.5rem); font-weight: 650; letter-spacing: -.045em; line-height: 1; }
+.ledger-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ledger-sub .v { font-weight: 600; font-size: 1.0625rem; letter-spacing: -.01em; }
+.ledger-sub .k { font-size: .8125rem; }
+.ledger-bar { display: flex; height: 8px; gap: 2px; }
+.ledger-bar i { display: block; height: 100%; background: var(--mark-muted); }
+.ledger-bar i:first-child { background: var(--accent); border-radius: 4px 0 0 4px; }
+.ledger-bar i:last-child { border-radius: 0 4px 4px 0; }
+
+/* ---------- how it works ---------- */
+.how { border-block: 1px solid var(--line); background: var(--surface); padding-block: clamp(40px, 5vw, 64px); }
+.how .wrap { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(24px, 5vw, 80px); }
+.how h2 { font-size: clamp(1.625rem, 3vw, 2.25rem); letter-spacing: -.035em; line-height: 1.08; font-weight: 600; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; counter-reset: s; }
+.steps li { border-top: 2px solid var(--ink); padding-top: 14px; counter-increment: s; }
+.steps li::before { content: counter(s); display: block; font-weight: 600; font-size: .875rem; color: var(--ink-3); margin-bottom: 10px; font-variant-numeric: tabular-nums; }
+.steps h3 { font-size: 1.0625rem; letter-spacing: -.01em; margin-bottom: 6px; }
+.steps p { color: var(--ink-2); font-size: .9375rem; }
+
+/* ---------- app ---------- */
+.app { padding-block: clamp(40px, 5vw, 72px) 56px; scroll-margin-top: 72px; }
+.app-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 24px; }
+.app-head h2 { font-size: clamp(1.75rem, 3.4vw, 2.5rem); letter-spacing: -.04em; line-height: 1.05; font-weight: 600; }
+.saved { color: var(--ink-3); font-size: .8125rem; }
+.tabs { display: flex; gap: 28px; border-bottom: 1px solid var(--line-strong); margin-bottom: 28px; }
+.tab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -1px; padding: 12px 0 10px; font-weight: 500; font-size: 1rem; color: var(--ink-3); cursor: pointer; min-height: 44px; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+
+.setup { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 16px; align-items: end; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 28px; }
+.fld { display: grid; gap: 6px; min-width: 0; }
+.fld > label, .lbl { font-size: .8125rem; font-weight: 500; color: var(--ink-2); }
+select, input[type="text"], input[type="number"] {
+  width: 100%; min-height: 44px; padding: 0 12px;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r);
+  font-size: 1rem; line-height: 1.2;
+}
+select { appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%230d1117' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+select:hover, input:hover { border-color: var(--ink-3); }
+input:focus-visible, select:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; border-color: var(--ink); }
+input[aria-invalid="true"] { border-color: var(--error); background: var(--error-soft); }
+.setup-note { grid-column: 1 / -1; color: var(--ink-3); font-size: .8125rem; margin-top: -4px; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+.side { position: sticky; top: 76px; }
+
+.banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 16px; border: 1px solid var(--line-strong); background: var(--surface); border-radius: var(--r); margin-bottom: 20px; font-size: .9375rem; }
+.banner p { flex: 1 1 260px; }
+.banner.warn { border-color: var(--ink); background: var(--accent-soft); }
+.banner .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+
+.grp { margin-bottom: 28px; }
+.grp-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 16px; padding: 10px 0; border-top: 2px solid var(--ink); }
+.grp-head h3 { font-size: 1.0625rem; font-weight: 600; letter-spacing: -.015em; }
+.grp-head .hint { flex-basis: 100%; order: 3; color: var(--ink-3); font-size: .8125rem; }
+.grp-head .sub { font-weight: 600; font-size: .9375rem; font-variant-numeric: tabular-nums; }
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, .8fr) minmax(0, .9fr) 40px;
+  grid-template-areas: "name name name name rm" "amt freq cnt cost cost";
+  gap: 10px 12px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--line);
+}
+.f-name { grid-area: name; } .f-amt { grid-area: amt; } .f-freq { grid-area: freq; }
+.f-count { grid-area: cnt; } .f-cost { grid-area: cost; text-align: right; } .f-rm { grid-area: rm; }
+.row.dup .f-name input { border-color: var(--ink); background: var(--accent-soft); }
+.row .lbl { display: block; margin-bottom: 4px; }
+.unit { font-size: .75rem; color: var(--ink-3); margin-top: 4px; line-height: 1.3; }
+.unit[hidden] { display: none; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 18px; }
+.toolbar .tl { font-size: .875rem; color: var(--ink-2); }
+.toolbar .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.quick-acts { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+.f { min-width: 0; }
+.money { position: relative; }
+.money .cur { position: absolute; left: 12px; top: 0; bottom: 0; display: flex; align-items: center; color: var(--ink-3); pointer-events: none; font-size: .9375rem; }
+.money input { padding-left: calc(12px + var(--cur-w, 1.1ch) + 6px); font-variant-numeric: tabular-nums; }
+.f-count input { font-variant-numeric: tabular-nums; }
+.f-cost { text-align: right; }
+.f-cost .val { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; min-height: 44px; }
+.f-cost output { font-weight: 600; font-variant-numeric: tabular-nums; }
+.f-cost .sub { color: var(--ink-3); font-size: .75rem; line-height: 1.3; }
+.err { color: var(--error); font-size: .8125rem; margin-top: 4px; line-height: 1.35; }
+.err:empty { display: none; }
+.icon-btn { width: 36px; height: 44px; display: grid; place-items: center; background: none; border: 0; border-radius: var(--r); color: var(--ink-3); cursor: pointer; }
+.icon-btn:hover { color: var(--ink); background: var(--line); }
+.add { margin-top: 10px; }
+.undo { margin: 0 0 16px; font-size: .9375rem; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.undo:empty { display: none; }
+
+/* ---------- results ---------- */
+.res { background: var(--surface); border: 1px solid var(--ink); border-radius: var(--r); }
+.res-top { padding: 20px 20px 18px; border-bottom: 1px solid var(--line); }
+.res .k { font-size: .875rem; color: var(--ink-2); }
+.hero-num { font-size: clamp(3rem, 5.4vw, 4.25rem); font-weight: 650; letter-spacing: -.05em; line-height: 1; margin-top: 6px; overflow-wrap: anywhere; }
+.figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+.figs > div { padding: 14px 20px 16px; }
+.figs > div + div { border-left: 1px solid var(--line); }
+.figs dt { font-size: .8125rem; color: var(--ink-2); }
+.figs dd { font-weight: 600; font-size: 1.1875rem; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.figs .why { font-size: .75rem; color: var(--ink-3); font-weight: 400; letter-spacing: 0; line-height: 1.3; display: block; margin-top: 4px; }
+.res-sec { padding: 18px 20px 20px; }
+.res-sec + .res-sec { border-top: 1px solid var(--line); }
+.res-sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.res-sec-head h3 { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--r); overflow: hidden; }
+.seg button { appearance: none; border: 0; background: var(--surface); padding: 0 12px; min-height: 32px; font-size: .8125rem; cursor: pointer; color: var(--ink-2); }
+.seg button + button { border-left: 1px solid var(--line-strong); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+
+.bars { display: grid; gap: 6px; }
+.brow { display: grid; grid-template-columns: minmax(84px, 112px) minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 32px; border-radius: 4px; }
+.brow:hover, .brow:focus-visible { background: var(--bg); }
+.brow .name { font-size: .875rem; color: var(--ink); overflow-wrap: break-word; }
+.track { height: 16px; }
+.fill { height: 100%; min-width: 2px; background: var(--mark-muted); border-radius: 0 4px 4px 0; transition: width .35s cubic-bezier(.2, .7, .2, 1); }
+.brow.top .fill { background: var(--accent); }
+.brow .val { font-size: .8125rem; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.brow .val b { color: var(--ink); font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 12px; font-size: .8125rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 12px; height: 12px; display: inline-block; border-radius: 2px; }
+.sw-a { background: var(--ink); }
+.sw-b { background: var(--accent); }
+
+.cbars { display: grid; gap: 10px; }
+.crow { display: grid; grid-template-columns: minmax(84px, 112px) minmax(0, 1fr) minmax(64px, auto); gap: 12px; align-items: center; border-radius: 4px; padding: 2px 0; }
+.crow:hover, .crow:focus-visible { background: var(--bg); }
+.crow .pair { display: grid; gap: 2px; }
+.crow .pair .track { height: 10px; }
+.crow .pair .a { background: var(--ink); border-radius: 0 4px 4px 0; height: 100%; min-width: 2px; transition: width .35s cubic-bezier(.2, .7, .2, 1); }
+.crow .pair .b { background: var(--accent); border-radius: 0 4px 4px 0; height: 100%; min-width: 2px; transition: width .35s cubic-bezier(.2, .7, .2, 1); }
+.crow .d { font-size: .8125rem; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+
+table.tbl { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.tbl-wrap { overflow-x: auto; }
+.tbl th, .tbl td { padding: 8px 10px 8px 0; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; white-space: normal; }
+.tbl th { font-weight: 500; color: var(--ink-3); font-size: .75rem; }
+.tbl tfoot td { font-weight: 600; border-bottom: 0; border-top: 1px solid var(--ink); }
+
+.empty { padding: 20px; color: var(--ink-2); display: grid; gap: 12px; justify-items: start; }
+.note { font-size: .8125rem; color: var(--ink-3); }
+details.how-calc { padding: 14px 20px 18px; border-top: 1px solid var(--line); font-size: .875rem; color: var(--ink-2); }
+details.how-calc summary { cursor: pointer; font-weight: 500; color: var(--ink); min-height: 28px; }
+details.how-calc ul { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+
+/* ---------- suggestions + export ---------- */
+.below { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+.below h2 { font-size: clamp(1.375rem, 2.4vw, 1.75rem); letter-spacing: -.03em; font-weight: 600; margin-bottom: 6px; }
+.below .sub-lede { color: var(--ink-2); font-size: .9375rem; margin-bottom: 16px; max-width: 40em; }
+.tips { display: grid; gap: 0; }
+.tip-item { border-top: 1px solid var(--line-strong); padding: 16px 0 18px; display: grid; gap: 6px; }
+.tip-item:last-child { border-bottom: 1px solid var(--line-strong); }
+.tip-item h3 { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.tip-item p { color: var(--ink-2); font-size: .9375rem; max-width: 46em; }
+.tip-item .calc { color: var(--ink); font-size: .9375rem; font-weight: 500; }
+.tip-item .tip-act { margin-top: 6px; }
+.export-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: grid; gap: 14px; }
+.export-box textarea { width: 100%; min-height: 150px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .75rem; padding: 10px; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--bg); resize: vertical; }
+.export-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.status { font-size: .875rem; color: var(--ok); min-height: 1.3em; }
+
+/* ---------- compare ---------- */
+.cmp-intro { max-width: 640px; display: grid; gap: 16px; justify-items: start; padding: 8px 0 24px; }
+.cmp-intro h3 { font-size: clamp(1.375rem, 2.4vw, 1.75rem); letter-spacing: -.03em; font-weight: 600; }
+.cmp-intro p { color: var(--ink-2); }
+.quick { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, .8fr) auto; gap: 12px; align-items: end; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 24px; }
+.quick-title { grid-column: 1 / -1; font-weight: 600; font-size: .9375rem; }
+.cmp-head { font-size: .9375rem; color: var(--ink-2); margin-bottom: 14px; }
+.delta-word { font-size: 1rem; font-weight: 500; margin-top: 8px; color: var(--ink); }
+.changes { list-style: none; margin: 0; padding: 0; display: grid; }
+.changes li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .875rem; }
+.changes li:last-child { border-bottom: 0; }
+.changes .tag { color: var(--ink-3); font-size: .75rem; }
+.changes .n { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+
+/* ---------- footer, tooltip, dock ---------- */
+.foot { border-top: 1px solid var(--line-strong); padding-block: 32px calc(40px + env(safe-area-inset-bottom, 0px)); color: var(--ink-2); font-size: .875rem; }
+.foot .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 56px; }
+.foot strong { color: var(--ink); font-weight: 600; }
+.tipbox { position: fixed; z-index: 50; pointer-events: none; background: var(--ink); color: #fff; border-radius: var(--r); padding: 10px 12px; font-size: .8125rem; line-height: 1.4; max-width: 260px; opacity: 0; transition: opacity .1s; left: 0; top: 0; }
+.tipbox.on { opacity: 1; }
+.tipbox b { font-weight: 600; display: block; margin-bottom: 2px; }
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--ink); color: #fff; padding: 10px var(--gutter-r) calc(10px + env(safe-area-inset-bottom, 0px)) var(--gutter); display: none; align-items: center; justify-content: space-between; gap: 12px; transform: translateY(110%); transition: transform .2s; }
+.dock.on { transform: none; }
+.dock .k { font-size: .75rem; opacity: .75; display: block; line-height: 1.2; }
+.dock .v { font-weight: 650; font-size: 1.25rem; letter-spacing: -.03em; line-height: 1.2; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1060px) {
+  .layout, .below, .foot .wrap, .how .wrap { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; }
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  .dock { display: flex; }
+  .foot { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 760px) {
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .setup { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .setup > .fld:first-child { grid-column: 1 / -1; }
+    .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 40px;
+    grid-template-areas: "name name rm" "amt freq freq" "cnt cost cost";
+    gap: 10px 12px; padding: 14px 0;
+  }
+  .row .lbl { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; display: block; margin-bottom: 4px; }
+  .f-name { grid-area: name; } .f-amt { grid-area: amt; } .f-freq { grid-area: freq; }
+  .f-count { grid-area: cnt; } .f-cost { grid-area: cost; text-align: right; }
+  .f-rm { grid-area: rm; align-self: end; }
+  .f-count.is-empty { display: none; }
+  .quick { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .quick .fld:first-of-type { grid-column: 1 / -1; }
+  .figs { grid-template-columns: minmax(0, 1fr); }
+  .figs > div + div { border-left: 0; border-top: 1px solid var(--line); }
+  .nav a.hide-s { display: none; }
+  .brow, .crow { grid-template-columns: 7.5rem minmax(0, 1fr) auto; gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="SportCost home">
+      <svg class="brand-mark" viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="22" fill="#0d1117"/><path d="M0 22L13 0h9L9 22z" fill="#ff5b14"/></svg>
+      SportCost
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a class="hide-s" href="#how">How it works</a>
+      <a class="btn btn-dark btn-sm" href="#app" data-go="calc">Open calculator</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="h-hero">
+    <div class="wrap">
+      <div>
+        <h1 id="h-hero">Know what your sport really costs</h1>
+        <p class="hero-lede">Add what you pay for club fees, coaching, gear, travel and the rest. SportCost turns it into a cost per year and per month, shows where the money goes, and lets you test a change before you make it.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#app" data-go="calc">Open the calculator</a>
+          <a class="btn" href="#how">See how it works</a>
+        </div>
+      </div>
+      <aside class="ledger" id="ledger" aria-label="Calculator preview with example amounts"></aside>
+    </div>
+  </section>
+
+  <section class="how" id="how" aria-labelledby="h-how">
+    <div class="wrap">
+      <h2 id="h-how">Three steps. No account.</h2>
+      <ol class="steps">
+        <li><h3>Enter what you pay</h3><p>Choose your sport and currency, then fill in each cost. Say how often you pay: once, weekly, monthly, per season or per event.</p></li>
+        <li><h3>See the real total</h3><p>Get the cost per year and per month. Gear you buy once is shown separately, so it is never counted twice.</p></li>
+        <li><h3>Compare a change</h3><p>Copy your budget, change one part such as gear or travel, and see what it does to the yearly cost.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="app" id="app" aria-labelledby="h-app">
+    <div class="wrap">
+      <div class="app-head">
+        <h2 id="h-app">Your budget</h2>
+        <p class="saved" id="saved"></p>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Views">
+        <button type="button" class="tab" role="tab" id="tab-calc" aria-selected="true" aria-controls="view-calc" data-view="calc">Calculator</button>
+        <button type="button" class="tab" role="tab" id="tab-compare" aria-selected="false" aria-controls="view-compare" data-view="compare" tabindex="-1">Compare</button>
+      </div>
+
+      <div id="view-calc" role="tabpanel" aria-labelledby="tab-calc">
+        <div class="setup" id="setup">
+          <div class="fld"><label for="sport">Sport</label><select id="sport"></select></div>
+          <div class="fld"><label for="country">Country</label><select id="country"></select></div>
+          <div class="fld"><label for="currency">Currency</label><select id="currency"></select></div>
+          <button type="button" class="btn" id="resetBtn">Reset</button>
+          <p class="setup-note">Changing the currency changes the symbol only. Amounts are not converted.</p>
+        </div>
+
+        <div class="toolbar" id="toolbar"></div>
+        <div id="bannerA"></div>
+
+        <div class="layout">
+          <div>
+            <div class="undo" id="undoA" role="status"></div>
+            <div class="list" id="itemsA" data-list="a"></div>
+          </div>
+          <aside class="side" aria-label="Results">
+            <div class="res" id="results"></div>
+          </aside>
+        </div>
+
+        <div class="below" id="below"></div>
+      </div>
+
+      <div id="view-compare" role="tabpanel" aria-labelledby="tab-compare" hidden></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><strong>SportCost is an early version.</strong> It is built to be tested with real athletes and families, and to improve from what they tell us. Your numbers stay in this browser. Nothing is uploaded.</p>
+    <p>Example amounts are placeholders that show how the tool works. They are not averages and not research. Advice lists questions to ask. It does not promise any discount or programme.</p>
+  </div>
+</footer>
+
+<div class="dock" id="dock">
+  <div><span class="k">Cost per year</span><span class="v" id="dockVal"></span></div>
+  <a class="btn btn-primary btn-sm" href="#results">See results</a>
+</div>
+<div class="tipbox" id="tipbox" role="presentation"></div>
+<div class="vh" id="live" aria-live="polite"></div>
+
+<script>
+/*
+ * SportCost calculation core.
+ *
+ * Pure functions only: no DOM, no storage, no network. Everything the app
+ * shows as a number comes from here, so it can be tested on its own
+ * (node --test) and reused if the app ever gets a backend.
+ *
+ * Money is handled in integer minor units (cents, rappen, yen...) to avoid
+ * floating point drift. Rounding happens once per item, then items are summed.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.SportCalc = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  var MAX_AMOUNT = 10000000;
+
+  /*
+   * How often a cost repeats.
+   *  - def:   default "times per year" (or lifespan in years for 'once')
+   *  - min/max: allowed range for that count
+   * 'once' is a purchase. It is spread over its lifespan for the yearly cost
+   * and shown separately as an upfront price. It is never added twice.
+   */
+  var FREQUENCIES = {
+    week:   { label: 'per week',          unit: 'weeks per year',   def: '40', min: 0,    max: 52,   hasCount: true },
+    month:  { label: 'per month',         unit: 'months per year',  def: '12', min: 0,    max: 12,   hasCount: true },
+    season: { label: 'per season',        unit: 'seasons per year', def: '1',  min: 0,    max: 12,   hasCount: true },
+    year:   { label: 'per year',          unit: '',                 def: '1',  min: 1,    max: 1,    hasCount: false },
+    event:  { label: 'per event or trip', unit: 'events per year',  def: '1',  min: 0,    max: 1000, hasCount: true },
+    once:   { label: 'bought once', unit: 'lasts (years)',    def: '2',  min: 0.25, max: 50,   hasCount: true }
+  };
+
+  /* ---------- number parsing ---------- */
+
+  function groupsOk(str, sep) {
+    if (str.indexOf(sep) === -1) return /^\d*$/.test(str);
+    var g = str.split(sep);
+    if (!/^\d{1,3}$/.test(g[0])) return false;
+    for (var i = 1; i < g.length; i++) if (!/^\d{3}$/.test(g[i])) return false;
+    return true;
+  }
+
+  /*
+   * Reads what a person types: "120", "120.50", "1,200", "1 200,50", "1'200".
+   * A single comma followed by exactly three digits ("1,200") is a thousands
+   * separator. A single dot is always a decimal point ("1.500" is 1.5).
+   * Returns { value, empty, error }. Empty input is a valid zero.
+   */
+  function parseNumber(input) {
+    if (input === null || input === undefined) return { value: 0, empty: true, error: null };
+    if (typeof input === 'number') {
+      if (!isFinite(input)) return { value: null, empty: false, error: 'Enter a number.' };
+      input = String(input);
+    }
+    var s = String(input).trim();
+    if (s === '') return { value: 0, empty: true, error: null };
+    if (/^-/.test(s)) return { value: null, empty: false, error: 'This cannot be negative.' };
+    if (!/^\+?[\d\s'’.,]+$/.test(s)) {
+      return { value: null, empty: false, error: 'Use digits only, like 120 or 120.50.' };
+    }
+    s = s.replace(/[\s'’]/g, '').replace(/^\+/, '');
+    if (!/\d/.test(s)) return { value: null, empty: false, error: 'Use digits only, like 120 or 120.50.' };
+
+    var dots = (s.match(/\./g) || []).length;
+    var commas = (s.match(/,/g) || []).length;
+    var decimalSep = null;
+    if (dots && commas) {
+      decimalSep = s.lastIndexOf('.') > s.lastIndexOf(',') ? '.' : ',';
+    } else if (dots === 1) {
+      decimalSep = '.';
+    } else if (commas === 1) {
+      var after = s.length - s.lastIndexOf(',') - 1;
+      var at = s.lastIndexOf(',');
+      decimalSep = (after === 3 && at >= 1 && at <= 3) ? null : ',';
+    }
+    var thousandsSep = decimalSep === '.' ? ',' : (decimalSep === ',' ? '.' : (dots > 1 ? '.' : ','));
+
+    var intRaw = s, fracRaw = '';
+    if (decimalSep) {
+      var idx = s.lastIndexOf(decimalSep);
+      intRaw = s.slice(0, idx);
+      fracRaw = s.slice(idx + 1);
+    }
+    var bad = { value: null, empty: false, error: 'Check the number format.' };
+    if (!/^\d*$/.test(fracRaw)) return bad;
+    if (!groupsOk(intRaw, thousandsSep)) return bad;
+    var intDigits = intRaw.split(thousandsSep).join('');
+    var value = parseFloat((intDigits || '0') + (fracRaw ? '.' + fracRaw : ''));
+    if (!isFinite(value)) return bad;
+    return { value: value, empty: false, error: null };
+  }
+
+  /* ---------- money helpers ---------- */
+
+  var digitsCache = {};
+  function currencyDigits(code) {
+    if (digitsCache[code] !== undefined) return digitsCache[code];
+    var d = 2;
+    try {
+      d = new Intl.NumberFormat('en', { style: 'currency', currency: code }).resolvedOptions().maximumFractionDigits;
+    } catch (e) { d = 2; }
+    digitsCache[code] = d;
+    return d;
+  }
+
+  function toMinor(value, digits) {
+    return Math.round((value + Number.EPSILON) * Math.pow(10, digits));
+  }
+
+  function fromMinor(minor, digits) {
+    return minor / Math.pow(10, digits);
+  }
+
+  var fmtCache = {};
+  function formatMoney(minor, currency, locale, opts) {
+    opts = opts || {};
+    var digits = currencyDigits(currency);
+    var whole = !!opts.whole;
+    var frac = whole ? 0 : digits;
+    // trim: show cents only when there are some ("$1,200" but "$216.67")
+    var minFrac = (opts.trim && !whole && minor % Math.pow(10, digits) === 0) ? 0 : frac;
+    var key = [currency, locale, frac, minFrac, opts.signed ? 's' : ''].join('|');
+    var f = fmtCache[key];
+    if (!f) {
+      var o = { style: 'currency', currency: currency, minimumFractionDigits: minFrac, maximumFractionDigits: frac };
+      if (opts.signed) o.signDisplay = 'exceptZero';
+      try { f = new Intl.NumberFormat(locale || 'en-US', o); }
+      catch (e) { f = new Intl.NumberFormat('en-US', o); }
+      fmtCache[key] = f;
+    }
+    return f.format(fromMinor(minor, digits));
+  }
+
+  /*
+   * Splits 100% across values so the rounded shares add up to exactly 100
+   * (largest remainder method). decimals = 0 gives whole percentages.
+   */
+  function roundShares(values, decimals) {
+    decimals = decimals || 0;
+    var scale = Math.pow(10, decimals);
+    var total = 0, i;
+    for (i = 0; i < values.length; i++) total += values[i];
+    if (!(total > 0)) return values.map(function () { return 0; });
+    var exact = values.map(function (v) { return (v / total) * 100 * scale; });
+    var floors = exact.map(Math.floor);
+    var left = 100 * scale - floors.reduce(function (a, b) { return a + b; }, 0);
+    var order = exact
+      .map(function (e, idx) { return { idx: idx, rem: e - Math.floor(e) }; })
+      .sort(function (a, b) { return b.rem - a.rem || a.idx - b.idx; });
+    for (i = 0; i < left; i++) floors[order[i].idx] += 1;
+    return floors.map(function (f) { return f / scale; });
+  }
+
+  /* ---------- items ---------- */
+
+  function normalizeName(name) {
+    return String(name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  /*
+   * Works out one expense line.
+   * item: { id, category, name, amount, freq, count } with text fields as typed.
+   * Invalid lines return errors and count as zero, so one typo never
+   * corrupts the totals.
+   */
+  function evaluateItem(item, digits) {
+    var errors = {};
+    var f = FREQUENCIES[item.freq];
+    if (!f) errors.freq = 'Choose how often you pay.';
+    var fx = f || FREQUENCIES.year;
+
+    var a = parseNumber(item.amount);
+    if (a.error) errors.amount = a.error;
+    else if (a.value > MAX_AMOUNT) errors.amount = 'This is too large. Check for extra digits.';
+
+    var times = 1;
+    if (fx.hasCount) {
+      var raw = (item.count === undefined || item.count === null || String(item.count).trim() === '') ? fx.def : item.count;
+      var c = parseNumber(raw);
+      if (c.error) errors.count = c.error;
+      else if (c.value < fx.min || c.value > fx.max) errors.count = 'Enter a number from ' + fx.min + ' to ' + fx.max + '.';
+      else times = c.value;
+    }
+
+    var valid = Object.keys(errors).length === 0;
+    var out = {
+      id: item.id, category: item.category, freq: item.freq, valid: valid, errors: errors,
+      empty: !!a.empty, amountMinor: 0, times: times,
+      annualMinor: 0, upfrontMinor: 0, firstYearMinor: 0
+    };
+    if (!valid) return out;
+
+    var amountMinor = toMinor(a.value, digits);
+    out.amountMinor = amountMinor;
+    if (item.freq === 'once') {
+      out.annualMinor = Math.round(amountMinor / times);
+      out.upfrontMinor = amountMinor;
+      // A purchase that lasts under a year is bought more than once in year one.
+      var buys = Math.max(1, Math.ceil(1 / times - 1e-9));
+      out.firstYearMinor = amountMinor * buys;
+    } else {
+      out.annualMinor = Math.round(amountMinor * times);
+      out.firstYearMinor = out.annualMinor;
+    }
+    return out;
+  }
+
+  function findDuplicates(items) {
+    var groups = {};
+    items.forEach(function (it) {
+      var n = normalizeName(it.name);
+      if (!n) return;
+      (groups[n] = groups[n] || []).push(it);
+    });
+    var out = [];
+    Object.keys(groups).forEach(function (n) {
+      if (groups[n].length > 1) {
+        out.push({ name: groups[n][0].name.trim(), ids: groups[n].map(function (i) { return i.id; }) });
+      }
+    });
+    return out;
+  }
+
+  /*
+   * Main entry point.
+   *  annual     = recurring costs + one-time purchases spread over their lifespan
+   *  upfront    = full price of each one-time purchase (shown on its own,
+   *               never added on top of annual)
+   *  firstYear  = cash needed in year one: recurring + purchases at full price
+   */
+  function computeBudget(items, opts) {
+    opts = opts || {};
+    var digits = opts.digits === undefined ? 2 : opts.digits;
+    var results = items.map(function (it) { return evaluateItem(it, digits); });
+
+    var byCategory = {};
+    var totals = { annualMinor: 0, upfrontMinor: 0, firstYearMinor: 0, annualizedPurchasesMinor: 0, recurringMinor: 0, monthlyMinor: 0 };
+    var invalidCount = 0;
+
+    results.forEach(function (r) {
+      if (!r.valid) { invalidCount++; return; }
+      var c = byCategory[r.category] || (byCategory[r.category] = { annualMinor: 0, upfrontMinor: 0, firstYearMinor: 0, items: 0, sharePct: 0 });
+      c.annualMinor += r.annualMinor;
+      c.upfrontMinor += r.upfrontMinor;
+      c.firstYearMinor += r.firstYearMinor;
+      c.items += 1;
+      totals.annualMinor += r.annualMinor;
+      totals.upfrontMinor += r.upfrontMinor;
+      totals.firstYearMinor += r.firstYearMinor;
+      if (r.freq === 'once') totals.annualizedPurchasesMinor += r.annualMinor;
+    });
+    totals.recurringMinor = totals.annualMinor - totals.annualizedPurchasesMinor;
+    totals.monthlyMinor = Math.round(totals.annualMinor / 12);
+
+    var ranking = Object.keys(byCategory)
+      .filter(function (id) { return byCategory[id].annualMinor > 0; })
+      .sort(function (a, b) { return byCategory[b].annualMinor - byCategory[a].annualMinor || (a < b ? -1 : 1); });
+    var shares = roundShares(ranking.map(function (id) { return byCategory[id].annualMinor; }), 0);
+    ranking.forEach(function (id, i) { byCategory[id].sharePct = shares[i]; });
+
+    return {
+      digits: digits,
+      items: results,
+      byCategory: byCategory,
+      ranking: ranking,
+      totals: totals,
+      invalidCount: invalidCount,
+      duplicates: findDuplicates(items)
+    };
+  }
+
+  /* ---------- scenarios ---------- */
+
+  function compareBudgets(aItems, bItems, opts) {
+    var a = computeBudget(aItems, opts);
+    var b = computeBudget(bItems, opts);
+    var deltas = {};
+    ['annualMinor', 'monthlyMinor', 'upfrontMinor', 'firstYearMinor'].forEach(function (k) {
+      deltas[k] = b.totals[k] - a.totals[k];
+    });
+
+    var ids = {};
+    Object.keys(a.byCategory).forEach(function (k) { ids[k] = true; });
+    Object.keys(b.byCategory).forEach(function (k) { ids[k] = true; });
+    var categories = Object.keys(ids).map(function (id) {
+      var av = a.byCategory[id] ? a.byCategory[id].annualMinor : 0;
+      var bv = b.byCategory[id] ? b.byCategory[id].annualMinor : 0;
+      return { id: id, aMinor: av, bMinor: bv, deltaMinor: bv - av };
+    }).filter(function (c) { return c.aMinor !== 0 || c.bMinor !== 0; })
+      .sort(function (x, y) { return Math.max(y.aMinor, y.bMinor) - Math.max(x.aMinor, x.bMinor) || (x.id < y.id ? -1 : 1); });
+
+    var aMap = {}, bMap = {};
+    aItems.forEach(function (it, i) { aMap[it.id] = { item: it, res: a.items[i] }; });
+    bItems.forEach(function (it, i) { bMap[it.id] = { item: it, res: b.items[i] }; });
+    var changes = [];
+    Object.keys(aMap).forEach(function (id) {
+      var x = aMap[id], y = bMap[id];
+      if (!y) {
+        if (x.res.annualMinor !== 0) changes.push({ id: id, type: 'removed', name: x.item.name, category: x.item.category, aMinor: x.res.annualMinor, bMinor: 0, deltaMinor: -x.res.annualMinor });
+      } else if (x.res.annualMinor !== y.res.annualMinor || x.res.upfrontMinor !== y.res.upfrontMinor) {
+        changes.push({ id: id, type: 'changed', name: y.item.name || x.item.name, category: y.item.category, aMinor: x.res.annualMinor, bMinor: y.res.annualMinor, deltaMinor: y.res.annualMinor - x.res.annualMinor });
+      }
+    });
+    Object.keys(bMap).forEach(function (id) {
+      if (!aMap[id] && bMap[id].res.annualMinor !== 0) {
+        var y = bMap[id];
+        changes.push({ id: id, type: 'added', name: y.item.name, category: y.item.category, aMinor: 0, bMinor: y.res.annualMinor, deltaMinor: y.res.annualMinor });
+      }
+    });
+    changes.sort(function (p, q) { return Math.abs(q.deltaMinor) - Math.abs(p.deltaMinor); });
+
+    return { a: a, b: b, deltas: deltas, categories: categories, changes: changes };
+  }
+
+  /*
+   * Scales every valid amount in one category by pct (-20 means 20% less).
+   * Lines that cannot be read are left untouched. Returns new items.
+   */
+  function scaleCategory(items, categoryId, pct, digits) {
+    if (typeof pct !== 'number' || !isFinite(pct) || pct <= -100 || pct > 1000) {
+      return { items: items.slice(), changed: 0, error: 'Enter a change between -99 and 1000 percent.' };
+    }
+    var changed = 0;
+    var out = items.map(function (it) {
+      if (it.category !== categoryId) return it;
+      var a = parseNumber(it.amount);
+      if (a.error || a.empty || a.value === 0) return it;
+      var minor = Math.round(toMinor(a.value, digits) * (1 + pct / 100));
+      changed++;
+      var copy = {};
+      Object.keys(it).forEach(function (k) { copy[k] = it[k]; });
+      copy.amount = String(fromMinor(minor, digits));
+      return copy;
+    });
+    return { items: out, changed: changed, error: null };
+  }
+
+  /* ---------- export ---------- */
+
+  function csvCell(v) {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'number') return String(v);
+    var s = String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // stop spreadsheets running a typed formula
+    if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  /*
+   * meta: { digits, categoryLabel(id), freqLabel(key) }
+   * Amounts are written as plain numbers with a dot, so any spreadsheet reads them.
+   */
+  function buildCsv(items, budget, meta) {
+    var d = meta.digits;
+    var rows = [['Category', 'Item', 'Amount', 'How often', 'Times per year or lifespan in years', 'Cost per year', 'Upfront price', 'Note']];
+    items.forEach(function (it, i) {
+      var r = budget.items[i];
+      var f = FREQUENCIES[it.freq];
+      var note = '';
+      if (!r.valid) note = 'Check this entry: ' + Object.keys(r.errors).map(function (k) { return r.errors[k]; }).join(' ');
+      var a = parseNumber(it.amount);
+      rows.push([
+        meta.categoryLabel(it.category),
+        it.name || 'Unnamed item',
+        r.valid ? fromMinor(r.amountMinor, d) : (it.amount || ''),
+        f ? f.label : '',
+        r.valid ? (f && f.hasCount ? r.times : 1) : '',
+        r.valid ? fromMinor(r.annualMinor, d) : '',
+        r.valid && r.upfrontMinor ? fromMinor(r.upfrontMinor, d) : '',
+        a.error ? note : note
+      ]);
+    });
+    var t = budget.totals;
+    rows.push([]);
+    rows.push(['Total cost per year', '', '', '', '', fromMinor(t.annualMinor, d), '', 'Recurring costs plus one-time purchases spread over their lifespan']);
+    rows.push(['Average per month', '', '', '', '', fromMinor(t.monthlyMinor, d), '', 'Cost per year divided by 12']);
+    rows.push(['Upfront purchases', '', '', '', '', '', fromMinor(t.upfrontMinor, d), 'Full price of one-time purchases. Not added to the yearly total']);
+    rows.push(['First-year cash needed', '', '', '', '', fromMinor(t.firstYearMinor, d), '', 'Recurring costs plus one-time purchases at full price']);
+    return rows.map(function (r) { return r.map(csvCell).join(','); }).join('\n');
+  }
+
+  return {
+    FREQUENCIES: FREQUENCIES,
+    MAX_AMOUNT: MAX_AMOUNT,
+    parseNumber: parseNumber,
+    currencyDigits: currencyDigits,
+    toMinor: toMinor,
+    fromMinor: fromMinor,
+    formatMoney: formatMoney,
+    roundShares: roundShares,
+    normalizeName: normalizeName,
+    evaluateItem: evaluateItem,
+    findDuplicates: findDuplicates,
+    computeBudget: computeBudget,
+    compareBudgets: compareBudgets,
+    scaleCategory: scaleCategory,
+    csvCell: csvCell,
+    buildCsv: buildCsv
+  };
+});
+
+;
+/*
+ * SportCost reference data: categories, sports, countries and advice.
+ *
+ * Every amount in the hockey example is a placeholder chosen to show how the
+ * tool works. They are not averages or statistics. The app says so wherever
+ * they appear. All other sports start as empty lists of typical cost lines.
+ *
+ * Advice never claims a discount, grant or programme exists. It points to
+ * questions worth asking and shows arithmetic on the user's own numbers.
+ */
+var SportData = (function () {
+  'use strict';
+
+  var CATEGORIES = [
+    { id: 'club',          label: 'Club and league fees',   short: 'Club fees',     hint: 'Registration, membership, team and league fees' },
+    { id: 'coaching',      label: 'Coaching and training',  short: 'Coaching',      hint: 'Lessons, camps, clinics and extra training' },
+    { id: 'equipment',     label: 'Equipment',              short: 'Equipment',     hint: 'Gear you buy once and use for more than a season, plus repairs' },
+    { id: 'clothing',      label: 'Clothing and kit',       short: 'Clothing',      hint: 'Team kit, training wear and shoes' },
+    { id: 'travel',        label: 'Travel',                 short: 'Travel',        hint: 'Getting to practice and games' },
+    { id: 'competitions',  label: 'Competitions',           short: 'Competitions',  hint: 'Tournament, event and entry fees' },
+    { id: 'accommodation', label: 'Accommodation',          short: 'Accommodation', hint: 'Hotels and stays away from home' },
+    { id: 'insurance',     label: 'Insurance and licences', short: 'Insurance',     hint: 'Player licence and injury cover' },
+    { id: 'other',         label: 'Other costs',            short: 'Other',         hint: 'Anything that does not fit above' }
+  ];
+
+  /* c = category, n = name, f = how often, k = times per year or lifespan in years, ex = example amount (hockey only) */
+  function L(c, n, f, k, ex) { return { c: c, n: n, f: f, k: k, ex: ex }; }
+
+  var SPORTS = [
+    { id: 'hockey', label: 'Ice hockey', lines: [
+      L('club', 'Club registration', 'season', '1', '1200'),
+      L('club', 'Practice ice fees', 'month', '9', '60'),
+      L('coaching', 'Skills coaching', 'week', '20', '70'),
+      L('equipment', 'Skates', 'once', '1.5', '400'),
+      L('equipment', 'Sticks', 'once', '0.5', '120'),
+      L('equipment', 'Helmet, pads and gloves', 'once', '3', '650'),
+      L('equipment', 'Tape, laces and repairs', 'month', '9', '25'),
+      L('clothing', 'Jersey and practice kit', 'once', '2', '180'),
+      L('competitions', 'Tournament entry fees', 'event', '4', '250'),
+      L('travel', 'Fuel and tolls', 'week', '30', '45'),
+      L('accommodation', 'Tournament hotels', 'event', '4', '320'),
+      L('insurance', 'Player licence and insurance', 'year', '1', '140'),
+      L('other', 'Team events and fundraising', 'year', '1', '150')
+    ] },
+    { id: 'soccer', label: 'Soccer', lines: [
+      L('club', 'Club membership', 'season', '1'),
+      L('coaching', 'Extra training or camps', 'event', '2'),
+      L('equipment', 'Boots', 'once', '1'),
+      L('equipment', 'Shin guards and goalkeeper gloves', 'once', '2'),
+      L('clothing', 'Kit and training wear', 'once', '1'),
+      L('travel', 'Travel to matches', 'week', '30'),
+      L('competitions', 'Tournament fees', 'event', '3'),
+      L('accommodation', 'Tournament stays', 'event', '2'),
+      L('insurance', 'Player licence and insurance', 'year', '1'),
+      L('other', 'Team events', 'year', '1')
+    ] },
+    { id: 'basketball', label: 'Basketball', lines: [
+      L('club', 'Club or league fees', 'season', '1'),
+      L('coaching', 'Skills training or camps', 'event', '2'),
+      L('equipment', 'Basketball shoes', 'once', '0.75'),
+      L('equipment', 'Ball and training aids', 'once', '2'),
+      L('clothing', 'Uniform and warm-ups', 'once', '2'),
+      L('travel', 'Travel to games', 'week', '30'),
+      L('competitions', 'Tournament fees', 'event', '4'),
+      L('accommodation', 'Tournament stays', 'event', '2'),
+      L('insurance', 'Licence and insurance', 'year', '1'),
+      L('other', 'Team events', 'year', '1')
+    ] },
+    { id: 'tennis', label: 'Tennis', lines: [
+      L('club', 'Club membership', 'year', '1'),
+      L('club', 'Court hire', 'week', '40'),
+      L('coaching', 'Private lessons', 'week', '40'),
+      L('equipment', 'Rackets', 'once', '1.5'),
+      L('equipment', 'Restringing and grips', 'month', '10'),
+      L('clothing', 'Clothing and shoes', 'once', '1'),
+      L('travel', 'Travel to practice and matches', 'week', '36'),
+      L('competitions', 'Tournament entry fees', 'event', '10'),
+      L('accommodation', 'Stays at away events', 'event', '4'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] },
+    { id: 'swimming', label: 'Swimming', lines: [
+      L('club', 'Club membership', 'season', '1'),
+      L('club', 'Pool time', 'month', '10'),
+      L('coaching', 'Extra coaching or camps', 'event', '2'),
+      L('equipment', 'Goggles, caps and training aids', 'once', '0.5'),
+      L('clothing', 'Suits and team kit', 'once', '0.75'),
+      L('travel', 'Travel to practice', 'week', '40'),
+      L('competitions', 'Meet entry fees', 'event', '8'),
+      L('accommodation', 'Meet stays', 'event', '3'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] },
+    { id: 'gymnastics', label: 'Gymnastics', lines: [
+      L('club', 'Club membership', 'month', '12'),
+      L('coaching', 'Private coaching', 'week', '40'),
+      L('equipment', 'Grips and training equipment', 'once', '1'),
+      L('clothing', 'Competition leotards and team wear', 'once', '1'),
+      L('travel', 'Travel to practice', 'week', '40'),
+      L('competitions', 'Competition entry fees', 'event', '5'),
+      L('accommodation', 'Competition stays', 'event', '3'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] },
+    { id: 'athletics', label: 'Track and field', lines: [
+      L('club', 'Club membership', 'year', '1'),
+      L('coaching', 'Coaching', 'month', '10'),
+      L('equipment', 'Spikes and training shoes', 'once', '0.75'),
+      L('equipment', 'Event equipment', 'once', '3'),
+      L('clothing', 'Club kit', 'once', '2'),
+      L('travel', 'Travel to practice and meets', 'week', '36'),
+      L('competitions', 'Meet entry fees', 'event', '10'),
+      L('accommodation', 'Meet stays', 'event', '3'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] },
+    { id: 'volleyball', label: 'Volleyball', lines: [
+      L('club', 'Club or league fees', 'season', '1'),
+      L('coaching', 'Camps and clinics', 'event', '2'),
+      L('equipment', 'Shoes and knee pads', 'once', '1'),
+      L('clothing', 'Uniform and warm-ups', 'once', '2'),
+      L('travel', 'Travel to games', 'week', '30'),
+      L('competitions', 'Tournament fees', 'event', '5'),
+      L('accommodation', 'Tournament stays', 'event', '3'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] },
+    { id: 'baseball', label: 'Baseball and softball', lines: [
+      L('club', 'League and team fees', 'season', '1'),
+      L('coaching', 'Lessons and camps', 'event', '3'),
+      L('equipment', 'Bat', 'once', '2'),
+      L('equipment', 'Glove', 'once', '3'),
+      L('equipment', 'Helmet and protective gear', 'once', '3'),
+      L('clothing', 'Uniform and cleats', 'once', '1'),
+      L('travel', 'Travel to games', 'week', '24'),
+      L('competitions', 'Tournament fees', 'event', '5'),
+      L('accommodation', 'Tournament stays', 'event', '3'),
+      L('insurance', 'Insurance', 'year', '1')
+    ] },
+    { id: 'skiing', label: 'Alpine skiing', lines: [
+      L('club', 'Club membership', 'year', '1'),
+      L('club', 'Lift passes', 'season', '1'),
+      L('coaching', 'Race coaching and camps', 'event', '4'),
+      L('equipment', 'Skis and bindings', 'once', '2'),
+      L('equipment', 'Boots', 'once', '2'),
+      L('equipment', 'Helmet and protection', 'once', '3'),
+      L('equipment', 'Waxing and servicing', 'month', '5'),
+      L('clothing', 'Race suit and outerwear', 'once', '2'),
+      L('travel', 'Travel to training and races', 'week', '20'),
+      L('competitions', 'Race entry fees', 'event', '15'),
+      L('accommodation', 'Race and camp stays', 'event', '8'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] },
+    { id: 'golf', label: 'Golf', lines: [
+      L('club', 'Club membership', 'year', '1'),
+      L('club', 'Range balls and green fees', 'week', '30'),
+      L('coaching', 'Lessons', 'month', '10'),
+      L('equipment', 'Club set', 'once', '4'),
+      L('equipment', 'Balls, gloves and accessories', 'month', '8'),
+      L('clothing', 'Golf clothing and shoes', 'once', '1.5'),
+      L('travel', 'Travel to courses', 'week', '30'),
+      L('competitions', 'Tournament entry fees', 'event', '8'),
+      L('accommodation', 'Tournament stays', 'event', '3'),
+      L('insurance', 'Handicap and insurance', 'year', '1')
+    ] },
+    { id: 'other', label: 'Another sport', lines: [
+      L('club', 'Club or team fees', 'season', '1'),
+      L('coaching', 'Coaching', 'month', '10'),
+      L('equipment', 'Main equipment', 'once', '2'),
+      L('clothing', 'Clothing and kit', 'once', '1'),
+      L('travel', 'Travel to practice and events', 'week', '36'),
+      L('competitions', 'Competition fees', 'event', '4'),
+      L('accommodation', 'Stays away from home', 'event', '2'),
+      L('insurance', 'Licence and insurance', 'year', '1')
+    ] }
+  ];
+
+  var COUNTRIES = [
+    { id: 'US', name: 'United States',  cur: 'USD', loc: 'en-US' },
+    { id: 'CA', name: 'Canada',         cur: 'CAD', loc: 'en-CA' },
+    { id: 'GB', name: 'United Kingdom', cur: 'GBP', loc: 'en-GB' },
+    { id: 'IE', name: 'Ireland',        cur: 'EUR', loc: 'en-IE' },
+    { id: 'DE', name: 'Germany',        cur: 'EUR', loc: 'de-DE' },
+    { id: 'AT', name: 'Austria',        cur: 'EUR', loc: 'de-AT' },
+    { id: 'CH', name: 'Switzerland',    cur: 'CHF', loc: 'de-CH' },
+    { id: 'FR', name: 'France',         cur: 'EUR', loc: 'fr-FR' },
+    { id: 'IT', name: 'Italy',          cur: 'EUR', loc: 'it-IT' },
+    { id: 'ES', name: 'Spain',          cur: 'EUR', loc: 'es-ES' },
+    { id: 'NL', name: 'Netherlands',    cur: 'EUR', loc: 'nl-NL' },
+    { id: 'SE', name: 'Sweden',         cur: 'SEK', loc: 'sv-SE' },
+    { id: 'FI', name: 'Finland',        cur: 'EUR', loc: 'fi-FI' },
+    { id: 'NO', name: 'Norway',         cur: 'NOK', loc: 'nb-NO' },
+    { id: 'DK', name: 'Denmark',        cur: 'DKK', loc: 'da-DK' },
+    { id: 'CZ', name: 'Czechia',        cur: 'CZK', loc: 'cs-CZ' },
+    { id: 'PL', name: 'Poland',         cur: 'PLN', loc: 'pl-PL' },
+    { id: 'AU', name: 'Australia',      cur: 'AUD', loc: 'en-AU' },
+    { id: 'NZ', name: 'New Zealand',    cur: 'NZD', loc: 'en-NZ' },
+    { id: 'JP', name: 'Japan',          cur: 'JPY', loc: 'ja-JP' },
+    { id: 'IN', name: 'India',          cur: 'INR', loc: 'en-IN' },
+    { id: 'BR', name: 'Brazil',         cur: 'BRL', loc: 'pt-BR' },
+    { id: 'MX', name: 'Mexico',         cur: 'MXN', loc: 'es-MX' },
+    { id: 'ZA', name: 'South Africa',   cur: 'ZAR', loc: 'en-ZA' },
+    { id: 'ZZ', name: 'Another country', cur: 'USD', loc: 'en-US' }
+  ];
+
+  var CURRENCIES = ['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'NZD', 'SEK', 'NOK', 'DKK', 'CZK', 'PLN', 'JPY', 'INR', 'BRL', 'MXN', 'ZAR'];
+
+  /* Questions to ask and ways to look at a cost. None of these names a real offer. */
+  var ADVICE = {
+    club: [
+      { t: 'Ask what the club fee covers', b: 'Ask for a written list of what registration, ice or pitch time, and league fees include. Costs that look separate are sometimes part of the main fee.' },
+      { t: 'Compare ways of paying', b: 'Ask whether paying per season or per year costs less than paying monthly, and whether a second child or an early payment changes the price.' }
+    ],
+    coaching: [
+      { t: 'Match coaching to a goal', b: 'Ask the team coach which skills would help most before booking extra sessions. A group session often costs less per hour than a private one, so compare the hourly price.' }
+    ],
+    equipment: [
+      { t: 'Choose where fit and safety matter', b: 'Used gear can work for items that do not need an exact fit. For protective gear, check that it fits properly and is in good condition before reusing it, or buy new.' },
+      { t: 'Ask about gear swaps', b: 'Ask your club or other families whether they pass on outgrown gear. Many youth teams do this informally, so it costs nothing to ask.' }
+    ],
+    clothing: [
+      { t: 'Check how long the kit is valid', b: 'Ask whether the team kit stays in use for more than one season before you buy extras. Training wear can come from general sports clothing.' }
+    ],
+    travel: [
+      { t: 'Share the driving', b: 'Agree a rota with other families so each of you drives fewer trips. Compare that with what you spend now for the same journeys.' },
+      { t: 'Group trips together', b: 'When the fixture list is out, look for games and practices on the same route that can share one trip.' }
+    ],
+    competitions: [
+      { t: 'Compare events by total cost', b: 'Add travel and a night away to the entry fee before you choose an event. A cheaper entry far from home can cost more overall.' }
+    ],
+    accommodation: [
+      { t: 'Plan stays early', b: 'Ask the organiser whether there is a team booking, and check whether a shared room with other families works for you. Events within a day trip can remove the stay.' }
+    ],
+    insurance: [
+      { t: 'Check what you already have', b: 'Ask the club what its policy covers, and check whether your family insurance already covers sport injuries before you add another policy.' }
+    ],
+    other: [
+      { t: 'Review small recurring costs', b: 'Look through the small items once a season. Several small payments can add up to more than one large one.' }
+    ]
+  };
+
+  return { CATEGORIES: CATEGORIES, SPORTS: SPORTS, COUNTRIES: COUNTRIES, CURRENCIES: CURRENCIES, ADVICE: ADVICE };
+})();
+if (typeof module === 'object' && module.exports) module.exports = SportData;
+
+;
+/*
+ * SportCost app
+ *
+ * Structure:
+ *   1. state and storage
+ *   2. formatting helpers
+ *   3. HTML builders (rows, results, comparison, advice)
+ *   4. painting (updates numbers without rebuilding inputs, so typing never loses focus)
+ *   5. events
+ *
+ * All maths lives in calc.js. This file only reads from it and draws.
+ */
+(function () {
+  'use strict';
+
+  var C = SportCalc;
+  var D = SportData;
+  var STORE_KEY = 'sportcost.v1';
+
+  var CAT = {}; D.CATEGORIES.forEach(function (c) { CAT[c.id] = c; });
+  var SPORT = {}; D.SPORTS.forEach(function (s) { SPORT[s.id] = s; });
+  var COUNTRY = {}; D.COUNTRIES.forEach(function (c) { COUNTRY[c.id] = c; });
+
+  /* ---------- 1. state and storage ---------- */
+
+  var seq = 0;
+  function uid() { seq += 1; return 'i' + Date.now().toString(36) + seq.toString(36); }
+
+  function makeItems(sportId, withExample) {
+    return SPORT[sportId].lines.map(function (l) {
+      return { id: uid(), category: l.c, name: l.n, amount: withExample && l.ex ? l.ex : '', freq: l.f, count: l.k };
+    });
+  }
+
+  function defaultState() {
+    return { v: 1, sport: 'hockey', country: 'US', currency: 'USD', example: true, a: makeItems('hockey', true), b: null };
+  }
+
+  function cleanItems(list) {
+    if (!Array.isArray(list)) return null;
+    var out = [];
+    for (var i = 0; i < list.length && i < 200; i++) {
+      var it = list[i];
+      if (!it || typeof it !== 'object' || !CAT[it.category] || !C.FREQUENCIES[it.freq]) return null;
+      out.push({
+        id: typeof it.id === 'string' && it.id ? it.id.slice(0, 40) : uid(),
+        category: it.category,
+        name: String(it.name || '').slice(0, 60),
+        amount: String(it.amount === undefined ? '' : it.amount).slice(0, 14),
+        freq: it.freq,
+        count: String(it.count === undefined ? '' : it.count).slice(0, 6)
+      });
+    }
+    return out;
+  }
+
+  var storageOk = true;
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return defaultState();
+      var s = JSON.parse(raw);
+      if (!s || s.v !== 1 || !SPORT[s.sport] || !COUNTRY[s.country]) return defaultState();
+      var a = cleanItems(s.a);
+      if (!a) return defaultState();
+      var b = s.b === null ? null : cleanItems(s.b);
+      if (s.b !== null && !b) b = null;
+      var cur = D.CURRENCIES.indexOf(s.currency) >= 0 ? s.currency : COUNTRY[s.country].cur;
+      return { v: 1, sport: s.sport, country: s.country, currency: cur, example: !!s.example, a: a, b: b };
+    } catch (e) {
+      return defaultState();
+    }
+  }
+
+  var saveTimer = null;
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); storageOk = true; }
+      catch (e) { storageOk = false; }
+      paintSaved();
+    }, 250);
+  }
+
+  var state = loadState();
+  var view = 'calc';
+  var ui = { breakMode: 'chart', cmpMode: 'chart', pendingSport: null, undo: null };
+  var bA = null; // current budget result for list A
+
+  /* ---------- 2. helpers ---------- */
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function digits() { return C.currencyDigits(state.currency); }
+  function loc() { return COUNTRY[state.country].loc; }
+  function fm(minor, o) { return C.formatMoney(minor, state.currency, loc(), o); }
+  function fmW(minor) { return fm(minor, { whole: true }); }
+  function fmT(minor) { return fm(minor, { trim: true }); }
+  function hasAmounts(items) {
+    return items.some(function (i) { return String(i.amount).trim() !== ''; });
+  }
+  function find(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
+  function currencySymbol() {
+    try {
+      var parts = new Intl.NumberFormat(loc(), { style: 'currency', currency: state.currency, currencyDisplay: 'narrowSymbol' }).formatToParts(1);
+      for (var i = 0; i < parts.length; i++) if (parts[i].type === 'currency') return parts[i].value;
+    } catch (e) { /* fall through */ }
+    return state.currency;
+  }
+  function budgetOf(items) { return C.computeBudget(items, { digits: digits() }); }
+
+  /* ---------- 3. HTML builders ---------- */
+
+  var ICON_X = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>';
+
+  function invAttr(msg) { return msg ? ' aria-invalid="true"' : ''; }
+
+  function rowHtml(it, res, list, isDup) {
+    var f = C.FREQUENCIES[it.freq] || C.FREQUENCIES.year;
+    var p = list + '-' + it.id;
+    var freqOpts = Object.keys(C.FREQUENCIES).map(function (k) {
+      return '<option value="' + k + '"' + (k === it.freq ? ' selected' : '') + '>' + esc(cap(C.FREQUENCIES[k].label)) + '</option>';
+    }).join('');
+    var count = f.hasCount
+      ? '<div class="f f-count"><label class="lbl" for="c-' + p + '">' + esc(cap(f.unit)) + '</label>' +
+        '<input id="c-' + p + '" data-f="count" type="text" inputmode="decimal" maxlength="6" autocomplete="off" value="' + esc(it.count) + '" placeholder="' + f.def + '" aria-describedby="ec-' + p + '"' + invAttr(res.errors.count) + '>' +
+        '<p class="err" id="ec-' + p + '" data-err="count">' + esc(res.errors.count || '') + '</p></div>'
+      : '<div class="f f-count is-empty"></div>';
+    var cost = (!res.valid || res.empty) ? '—' : fmT(res.annualMinor);
+    var sub = (res.valid && !res.empty && it.freq === 'once') ? 'Pay ' + fmT(res.upfrontMinor) + ' up front' : '';
+    return '<div class="row' + (isDup ? ' dup' : '') + '" data-id="' + esc(it.id) + '">' +
+      '<div class="f f-name"><label class="lbl" for="n-' + p + '">Item</label>' +
+        '<input id="n-' + p + '" data-f="name" type="text" maxlength="60" autocomplete="off" value="' + esc(it.name) + '" placeholder="Name this cost"></div>' +
+      '<div class="f f-amt"><label class="lbl" for="a-' + p + '">Amount</label>' +
+        '<div class="money" style="--cur-w:' + Math.max(1.1, currencySymbol().length) + 'ch"><span class="cur" aria-hidden="true">' + esc(currencySymbol()) + '</span>' +
+        '<input id="a-' + p + '" data-f="amount" type="text" inputmode="decimal" maxlength="14" autocomplete="off" value="' + esc(it.amount) + '" placeholder="0" aria-describedby="ea-' + p + '"' + invAttr(res.errors.amount) + '></div>' +
+        '<p class="err" id="ea-' + p + '" data-err="amount">' + esc(res.errors.amount || '') + '</p></div>' +
+      '<div class="f f-freq"><label class="lbl" for="f-' + p + '">How often</label>' +
+        '<select id="f-' + p + '" data-f="freq">' + freqOpts + '</select></div>' +
+      count +
+      '<div class="f f-cost"><span class="lbl">Per year</span><div class="val"><output data-out="cost">' + esc(cost) + '</output><span class="sub" data-out="sub">' + esc(sub) + '</span></div></div>' +
+      '<div class="f f-rm"><button type="button" class="icon-btn" data-act="remove" data-list="' + list + '" aria-label="Remove ' + esc(it.name || 'this item') + '">' + ICON_X + '</button></div>' +
+    '</div>';
+  }
+
+  function groupHtml(cat, items, budget, list, dupIds) {
+    var rows = '';
+    items.forEach(function (it, i) {
+      if (it.category !== cat.id) return;
+      rows += rowHtml(it, budget.items[i], list, dupIds[it.id]);
+    });
+    var sub = budget.byCategory[cat.id] ? budget.byCategory[cat.id].annualMinor : 0;
+    return '<section class="grp" data-cat="' + cat.id + '" aria-labelledby="g-' + list + '-' + cat.id + '">' +
+      '<div class="grp-head"><h3 id="g-' + list + '-' + cat.id + '">' + esc(cat.label) + '</h3>' +
+      '<span class="sub" data-out="grp">' + (sub ? esc(fmT(sub)) + ' a year' : '') + '</span>' +
+      '<p class="hint">' + esc(cat.hint) + '</p></div>' + rows +
+      '<button type="button" class="btn btn-sm add" id="add-' + list + '-' + cat.id + '" data-act="add" data-list="' + list + '" data-cat="' + cat.id + '">Add item to ' + esc(cat.short.toLowerCase()) + '</button>' +
+    '</section>';
+  }
+
+  function dupMap(budget) {
+    var m = {};
+    budget.duplicates.forEach(function (d) { d.ids.forEach(function (id) { m[id] = true; }); });
+    return m;
+  }
+
+  function listHtml(list) {
+    var items = list === 'a' ? state.a : state.b;
+    var budget = list === 'a' ? bA : budgetOf(state.b);
+    var dups = dupMap(budget);
+    return D.CATEGORIES.map(function (c) { return groupHtml(c, items, budget, list, dups); }).join('');
+  }
+
+  function tipText(id, b) {
+    var c = b.byCategory[id];
+    var lines = [esc(CAT[id].label), '<span>' + esc(fmT(c.annualMinor)) + ' per year</span>', '<span>' + esc(fmT(Math.round(c.annualMinor / 12))) + ' per month</span>', '<span>' + c.sharePct + '% of the total</span>'];
+    if (c.upfrontMinor) lines.push('<span>' + esc(fmT(c.upfrontMinor)) + ' paid up front</span>');
+    return lines.join('<br>');
+  }
+
+  function figHtml(label, value, why) {
+    return '<div><dt>' + esc(label) + '</dt><dd>' + esc(value) + '<span class="why">' + esc(why) + '</span></dd></div>';
+  }
+
+  function segHtml(name, mode) {
+    return '<div class="seg" role="group" aria-label="View as">' +
+      '<button type="button" data-seg="' + name + '" data-mode="chart" aria-pressed="' + (mode === 'chart') + '">Chart</button>' +
+      '<button type="button" data-seg="' + name + '" data-mode="table" aria-pressed="' + (mode === 'table') + '">Table</button></div>';
+  }
+
+  function breakdownHtml(b) {
+    if (!b.ranking.length) return '';
+    var max = b.byCategory[b.ranking[0]].annualMinor;
+    var body;
+    if (ui.breakMode === 'chart') {
+      body = '<div class="bars">' + b.ranking.map(function (id, i) {
+        var c = b.byCategory[id];
+        var w = Math.max(1, Math.round((c.annualMinor / max) * 100));
+        var label = CAT[id].label + ': ' + fm(c.annualMinor) + ' per year, ' + c.sharePct + ' percent';
+        return '<div class="brow' + (i === 0 ? ' top' : '') + '" tabindex="0" role="img" aria-label="' + esc(label) + '" data-tip="' + esc(tipText(id, b)) + '">' +
+          '<span class="name">' + esc(CAT[id].short) + '</span>' +
+          '<div class="track"><div class="fill" style="width:' + w + '%"></div></div>' +
+          '<span class="val"><b>' + esc(fmW(c.annualMinor)) + '</b> ' + c.sharePct + '%</span></div>';
+      }).join('') + '</div>';
+    } else {
+      body = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Category</th><th scope="col">Per year</th><th scope="col">Per month</th><th scope="col">Share</th><th scope="col">Up front</th></tr></thead><tbody>' +
+        b.ranking.map(function (id) {
+          var c = b.byCategory[id];
+          return '<tr><td>' + esc(CAT[id].short) + '</td><td>' + esc(fm(c.annualMinor)) + '</td><td>' + esc(fm(Math.round(c.annualMinor / 12))) + '</td><td>' + c.sharePct + '%</td><td>' + (c.upfrontMinor ? esc(fm(c.upfrontMinor)) : '—') + '</td></tr>';
+        }).join('') +
+        '</tbody><tfoot><tr><td>Total</td><td>' + esc(fm(b.totals.annualMinor)) + '</td><td>' + esc(fm(b.totals.monthlyMinor)) + '</td><td>100%</td><td>' + esc(fm(b.totals.upfrontMinor)) + '</td></tr></tfoot></table></div>';
+    }
+    return '<div class="res-sec"><div class="res-sec-head"><h3>Where the money goes</h3>' + segHtml('break', ui.breakMode) + '</div>' + body + '</div>';
+  }
+
+  function resultsHtml(b) {
+    var t = b.totals;
+    var h = '<div class="res-top"><p class="k">Cost per year</p><p class="hero-num">' + esc(fmW(t.annualMinor)) + '</p></div>' +
+      '<dl class="figs">' +
+      figHtml('Average per month', fmW(t.monthlyMinor), 'Cost per year divided by 12') +
+      figHtml('Bought once', fmW(t.upfrontMinor), 'Full price, already counted in the yearly cost') +
+      figHtml('First year in cash', fmW(t.firstYearMinor), 'Recurring costs plus full purchase prices') +
+      '</dl>';
+    if (b.invalidCount) {
+      h += '<div class="res-sec"><p class="err" style="margin:0">' + b.invalidCount + (b.invalidCount === 1 ? ' entry has a problem and is' : ' entries have a problem and are') + ' not counted. Fix the marked fields.</p></div>';
+    }
+    if (!b.ranking.length) {
+      h += '<div class="empty"><p>Enter an amount to see where your money goes. Start with the biggest cost, such as club fees.</p>' +
+        (state.sport === 'hockey' ? '<button type="button" class="btn btn-sm" data-act="fill-example">Fill with example amounts</button>' : '') + '</div>';
+    } else {
+      h += breakdownHtml(b);
+    }
+    h += '<details class="how-calc"><summary>How these numbers are worked out</summary><ul>' +
+      '<li>Monthly, weekly, seasonal and event costs are multiplied by how many times you pay in a year.</li>' +
+      '<li>Things you buy once are divided by how many years they last. The full price shows as bought once.</li>' +
+      '<li>First year in cash adds the full price of each purchase. An item that lasts under a year counts each time you buy it.</li>' +
+      '<li>Changing the currency changes the symbol only. Amounts are not converted.</li></ul></details>';
+    return '<div id="resBody">' + h + '</div>';
+  }
+
+  /* Advice: questions to ask plus arithmetic on the user's own numbers. */
+  function adviceItems(b) {
+    var out = [];
+    b.ranking.slice(0, 3).forEach(function (id, rank) {
+      var list = D.ADVICE[id] || [];
+      var take = rank === 0 ? 2 : 1;
+      var c = b.byCategory[id];
+      list.slice(0, take).forEach(function (a, i) {
+        var tenth = Math.round(c.annualMinor * 0.1);
+        out.push({
+          cat: id, title: a.t, body: a.b,
+          calc: i === 0 ? CAT[id].short + ' make up ' + c.sharePct + '% of your yearly cost (' + fmT(c.annualMinor) + '). A 10% cut here would save ' + fmT(tenth) + ' a year.' : '',
+          action: i === 0
+        });
+      });
+    });
+    var extra = 0;
+    state.a.forEach(function (it, i) {
+      var r = b.items[i];
+      if (!r.valid || it.freq !== 'once' || r.amountMinor <= 0) return;
+      var longer = C.evaluateItem({ id: it.id, category: it.category, name: it.name, amount: it.amount, freq: 'once', count: String(r.times + 1) }, digits());
+      if (longer.valid) extra += r.annualMinor - longer.annualMinor;
+    });
+    if (extra > 0) {
+      out.push({
+        cat: null, title: 'Make gear last longer where it is safe to',
+        body: 'This only applies where the item still fits and is in good condition. Protective gear should be checked before you reuse it.',
+        calc: 'If every item you buy once lasted one year longer, your yearly cost would fall by ' + fmT(extra) + '.', action: false
+      });
+    }
+    return out;
+  }
+
+  function belowHtml(b) {
+    var tips = adviceItems(b);
+    var tipsHtml;
+    if (!tips.length) {
+      tipsHtml = '<p class="sub-lede">Ideas appear here once you enter amounts. They are based on your three biggest costs.</p>';
+    } else {
+      tipsHtml = '<p class="sub-lede">Based on your biggest costs. These are questions to ask and ways to look at a cost. They do not promise that any discount or programme exists where you live.</p><div class="tips">' +
+        tips.map(function (t) {
+          return '<div class="tip-item"><h3>' + esc(t.title) + '</h3>' +
+            (t.calc ? '<p class="calc">' + esc(t.calc) + '</p>' : '') +
+            '<p>' + esc(t.body) + '</p>' +
+            (t.action ? '<div class="tip-act"><button type="button" class="btn btn-sm" data-act="try-cut" data-cat="' + t.cat + '">Test a 10% cut in Compare</button></div>' : '') +
+            '</div>';
+        }).join('') + '</div>';
+    }
+    return '<section aria-labelledby="h-tips"><h2 id="h-tips">Where you could spend less</h2>' + tipsHtml + '</section>' +
+      '<section aria-labelledby="h-exp"><div class="export-box"><div><h2 id="h-exp" style="margin-bottom:6px">Take it with you</h2>' +
+      '<p class="note">Copy your budget to paste into a spreadsheet or a message.</p></div>' +
+      '<div class="export-acts"><button type="button" class="btn" data-act="copy-csv">Copy as CSV</button><button type="button" class="btn" data-act="copy-summary">Copy summary</button></div>' +
+      '<p class="status" id="copyStatus" role="status"></p>' +
+      '<textarea id="exportText" readonly hidden aria-label="Export text. Select all and copy."></textarea></div></section>';
+  }
+
+  /* ---------- comparison ---------- */
+
+  function cmpPanelHtml(cmp) {
+    var d = cmp.deltas;
+    var diff = d.annualMinor;
+    var word = diff === 0 ? 'No difference yet' : (diff < 0 ? 'The alternative costs ' + fm(-diff, { whole: true }) + ' less per year' : 'The alternative costs ' + fm(diff, { whole: true }) + ' more per year');
+    var h = '<div class="res-top"><p class="k">Alternative compared with current, per year</p><p class="hero-num">' + esc(fm(diff, { whole: true, signed: true })) + '</p><p class="delta-word">' + esc(word) + '</p></div>' +
+      '<dl class="figs">' +
+      figHtml('Per month', fm(d.monthlyMinor, { whole: true, signed: true }), cmp.a.totals.monthlyMinor === cmp.b.totals.monthlyMinor ? 'Same as current' : fmW(cmp.a.totals.monthlyMinor) + ' to ' + fmW(cmp.b.totals.monthlyMinor)) +
+      figHtml('First year in cash', fm(d.firstYearMinor, { whole: true, signed: true }), fmW(cmp.a.totals.firstYearMinor) + ' to ' + fmW(cmp.b.totals.firstYearMinor)) +
+      figHtml('Bought once', fm(d.upfrontMinor, { whole: true, signed: true }), fmW(cmp.a.totals.upfrontMinor) + ' to ' + fmW(cmp.b.totals.upfrontMinor)) +
+      '</dl>';
+    if (!cmp.categories.length) {
+      h += '<div class="empty"><p>Enter amounts in the calculator first. Then change the alternative to see the difference.</p></div>';
+      return h;
+    }
+    var max = 1;
+    cmp.categories.forEach(function (c) { max = Math.max(max, c.aMinor, c.bMinor); });
+    var body;
+    if (ui.cmpMode === 'chart') {
+      body = '<div class="legend"><span><i class="sw-a"></i>Current</span><span><i class="sw-b"></i>Alternative</span></div><div class="cbars">' +
+        cmp.categories.map(function (c) {
+          var aw = Math.round((c.aMinor / max) * 100), bw = Math.round((c.bMinor / max) * 100);
+          var label = CAT[c.id].label + ': current ' + fm(c.aMinor) + ', alternative ' + fm(c.bMinor) + ' per year, difference ' + fm(c.deltaMinor, { signed: true });
+          var tip = esc(CAT[c.id].label) + '<br><span>Current ' + esc(fm(c.aMinor)) + '</span><br><span>Alternative ' + esc(fm(c.bMinor)) + '</span><br><span>Difference ' + esc(fm(c.deltaMinor, { signed: true })) + '</span>';
+          return '<div class="crow" tabindex="0" role="img" aria-label="' + esc(label) + '" data-tip="' + tip + '"><span class="brow-name" style="font-size:.875rem">' + esc(CAT[c.id].short) + '</span>' +
+            '<div class="pair"><div class="track"><div class="a" style="width:' + aw + '%"></div></div><div class="track"><div class="b" style="width:' + bw + '%"></div></div></div>' +
+            '<span class="d">' + (c.deltaMinor === 0 ? '—' : esc(fm(c.deltaMinor, { whole: true, signed: true }))) + '</span></div>';
+        }).join('') + '</div>';
+    } else {
+      body = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Category</th><th scope="col">Current</th><th scope="col">Alternative</th><th scope="col">Difference</th></tr></thead><tbody>' +
+        cmp.categories.map(function (c) {
+          return '<tr><td>' + esc(CAT[c.id].short) + '</td><td>' + esc(fm(c.aMinor)) + '</td><td>' + esc(fm(c.bMinor)) + '</td><td>' + esc(fm(c.deltaMinor, { signed: true })) + '</td></tr>';
+        }).join('') + '</tbody><tfoot><tr><td>Total per year</td><td>' + esc(fm(cmp.a.totals.annualMinor)) + '</td><td>' + esc(fm(cmp.b.totals.annualMinor)) + '</td><td>' + esc(fm(diff, { signed: true })) + '</td></tr></tfoot></table></div>';
+    }
+    h += '<div class="res-sec"><div class="res-sec-head"><h3>By category, per year</h3>' + segHtml('cmp', ui.cmpMode) + '</div>' + body + '</div>';
+    if (cmp.changes.length) {
+      h += '<div class="res-sec"><div class="res-sec-head"><h3>What changed</h3></div><ul class="changes">' +
+        cmp.changes.slice(0, 8).map(function (c) {
+          var tag = c.type === 'added' ? 'Added' : (c.type === 'removed' ? 'Removed' : 'Changed');
+          return '<li><span>' + esc(c.name || 'Unnamed item') + ' <span class="tag">' + tag + '</span></span><span class="n">' + esc(fm(c.deltaMinor, { signed: true, trim: true })) + '</span></li>';
+        }).join('') + '</ul></div>';
+    }
+    return h;
+  }
+
+  function quickHtml() {
+    var cats = D.CATEGORIES.map(function (c) { return '<option value="' + c.id + '">' + esc(c.label) + '</option>'; }).join('');
+    return '<div class="quick" id="quick"><p class="quick-title">Change a whole category</p>' +
+      '<div class="fld"><label for="qCat">Category</label><select id="qCat">' + cats + '</select></div>' +
+      '<div class="fld"><label for="qDir">Change</label><select id="qDir"><option value="cut">Reduce by</option><option value="raise">Increase by</option></select></div>' +
+      '<div class="fld"><label for="qPct">Percent</label><input id="qPct" type="text" inputmode="decimal" maxlength="5" value="10" autocomplete="off" aria-describedby="qErr"></div>' +
+      '<button type="button" class="btn btn-primary" data-act="apply-quick">Apply</button>' +
+      '<p class="err" id="qErr" style="grid-column:1/-1;margin:0"></p>' +
+      '<div class="quick-acts"><button type="button" class="btn btn-sm" id="matchBtn" data-act="match-a">Reset alternative to my current budget</button><button type="button" class="btn btn-sm" id="dropBtn" data-act="remove-b">Remove alternative</button></div></div>';
+  }
+
+  function introHtml() {
+    return '<div class="cmp-intro"><h3>Test a change before you make it</h3>' +
+      '<p>Copy your budget, change one part of it, and see what it does to the yearly cost. Try cheaper gear, fewer trips, or one less tournament. Your current budget stays as it is.</p>' +
+      '<button type="button" class="btn btn-primary" data-act="start-compare">Start from my current budget</button></div>';
+  }
+
+  /* ---------- export text ---------- */
+
+  function summaryText() {
+    var b = bA, t = b.totals;
+    var lines = ['SportCost summary', SPORT[state.sport].label + ', ' + COUNTRY[state.country].name + ', ' + state.currency, '',
+      'Cost per year: ' + fm(t.annualMinor), 'Average per month: ' + fm(t.monthlyMinor), 'Bought once (full price): ' + fm(t.upfrontMinor), 'First year in cash: ' + fm(t.firstYearMinor), '', 'By category (per year):'];
+    b.ranking.forEach(function (id) { lines.push('- ' + CAT[id].label + ': ' + fm(b.byCategory[id].annualMinor) + ' (' + b.byCategory[id].sharePct + '%)'); });
+    if (state.example) lines.push('', 'These are example amounts, not real figures.');
+    return lines.join('\n');
+  }
+
+  function csvText() {
+    return C.buildCsv(state.a, bA, { digits: digits(), categoryLabel: function (id) { return CAT[id].label; } });
+  }
+
+  /* ---------- 4. painting ---------- */
+
+  function paintSaved() {
+    var el = $('#saved');
+    if (!el) return;
+    el.textContent = storageOk ? 'Saved in this browser. Nothing is sent anywhere.' : 'Not saved. This browser blocks storage, so your numbers last until you close the page.';
+  }
+
+  function paintRow(row, it, res, isDup) {
+    var out = row.querySelector('[data-out="cost"]');
+    var sub = row.querySelector('[data-out="sub"]');
+    if (out) out.textContent = (!res.valid || res.empty) ? '—' : fmT(res.annualMinor);
+    if (sub) sub.textContent = (res.valid && !res.empty && it.freq === 'once') ? 'Pay ' + fmT(res.upfrontMinor) + ' up front' : '';
+    row.classList.toggle('dup', !!isDup);
+    ['amount', 'count'].forEach(function (k) {
+      var err = row.querySelector('[data-err="' + k + '"]');
+      var input = row.querySelector('[data-f="' + k + '"]');
+      var msg = res.errors[k] || '';
+      if (err) err.textContent = msg;
+      if (input) { if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid'); }
+    });
+  }
+
+  function paintList(list) {
+    var items = list === 'a' ? state.a : state.b;
+    var budget = list === 'a' ? bA : budgetOf(state.b);
+    var dups = dupMap(budget);
+    var root = $('#items' + list.toUpperCase());
+    if (!root) return budget;
+    $$('.row', root).forEach(function (row) {
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].id === row.getAttribute('data-id')) { paintRow(row, items[i], budget.items[i], dups[items[i].id]); break; }
+      }
+    });
+    $$('.grp', root).forEach(function (g) {
+      var c = budget.byCategory[g.getAttribute('data-cat')];
+      var el = g.querySelector('[data-out="grp"]');
+      if (el) el.textContent = c && c.annualMinor ? fmT(c.annualMinor) + ' a year' : '';
+    });
+    return budget;
+  }
+
+  function renderList(list) {
+    var root = $('#items' + list.toUpperCase());
+    if (!root) return;
+    var ref = rememberFocus();
+    root.innerHTML = listHtml(list);
+    restoreFocus(ref);
+  }
+
+  function rememberFocus() {
+    var el = document.activeElement;
+    if (!el || !el.id) return null;
+    var r = { id: el.id };
+    try { r.s = el.selectionStart; r.e = el.selectionEnd; } catch (e) { /* not a text input */ }
+    return r;
+  }
+  function restoreFocus(ref) {
+    if (!ref) return;
+    var el = document.getElementById(ref.id);
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    try { if (ref.s !== undefined && ref.s !== null) el.setSelectionRange(ref.s, ref.e); } catch (e) { /* ignore */ }
+  }
+
+  function paintBanner() {
+    var h = '';
+    if (ui.pendingSport) {
+      var s = SPORT[ui.pendingSport];
+      h += '<div class="banner warn" role="group" aria-label="Replace your items?"><p>Use the ' + esc(s.label.toLowerCase()) + ' starter list? Your current items and amounts would be replaced.</p>' +
+        '<div class="acts"><button type="button" class="btn btn-sm btn-dark" data-act="replace-sport">Replace my items</button><button type="button" class="btn btn-sm" data-act="keep-sport">Keep my items</button></div></div>';
+    }
+    if (bA.duplicates.length) {
+      var d = bA.duplicates[0];
+      h += '<div class="banner" role="status"><p>“' + esc(d.name) + '” is listed ' + d.ids.length + ' times. If they are the same cost, remove one so it is not counted twice.</p></div>';
+    }
+    $('#bannerA').innerHTML = h;
+  }
+
+  function paintToolbar() {
+    var armed = $('#clearBtn') && $('#clearBtn').getAttribute('data-armed');
+    $('#toolbar').innerHTML = '<p class="tl">' + (state.example ? 'Example amounts for youth ice hockey. Replace them with your own.' : esc(SPORT[state.sport].label) + ' budget') + '</p>' +
+      '<div class="acts">' + (state.sport === 'hockey' && !hasAmounts(state.a) ? '<button type="button" class="btn btn-sm" data-act="fill-example">Fill with example amounts</button>' : '') +
+      '<button type="button" class="btn btn-sm" id="clearBtn" data-act="clear-amounts">Clear all amounts</button></div>';
+    void armed;
+  }
+
+  var liveTimer = null;
+  function announce(text) {
+    clearTimeout(liveTimer);
+    liveTimer = setTimeout(function () { var l = $('#live'); if (l) l.textContent = text; }, 700);
+  }
+
+  function paintResults() {
+    var el = $('#results');
+    var ref = rememberFocus();
+    var focusSeg = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-seg');
+    var open = $('details.how-calc', el);
+    var wasOpen = open && open.open;
+    el.innerHTML = resultsHtml(bA);
+    if (wasOpen) { var d = $('details.how-calc', el); if (d) d.open = true; }
+    if (focusSeg) { var btn = $('[data-seg="' + focusSeg + '"][aria-pressed="true"]', el); if (btn) btn.focus({ preventScroll: true }); }
+    else restoreFocus(ref);
+    $('#dockVal').textContent = fmW(bA.totals.annualMinor);
+    announce('Cost per year ' + fmW(bA.totals.annualMinor) + '. Average per month ' + fmW(bA.totals.monthlyMinor) + '.');
+  }
+
+  function paintBelow() {
+    var el = $('#below');
+    var status = $('#copyStatus') ? $('#copyStatus').textContent : '';
+    el.innerHTML = belowHtml(bA);
+    if ($('#copyStatus')) $('#copyStatus').textContent = status;
+  }
+
+  function paintCompare() {
+    var panel = $('#cmpRes');
+    if (!panel || !state.b) return;
+    var cmp = C.compareBudgets(state.a, state.b, { digits: digits() });
+    panel.innerHTML = cmpPanelHtml(cmp);
+  }
+
+  function recalcA() { bA = budgetOf(state.a); }
+
+  /* Update everything after A changed. Rows are repainted, not rebuilt. */
+  function refreshA(opts) {
+    opts = opts || {};
+    recalcA();
+    if (opts.rebuild) renderList('a'); else paintList('a');
+    paintBanner();
+    paintResults();
+    paintBelow();
+    if (state.b) paintCompare();
+    scheduleSave();
+  }
+
+  function refreshB() {
+    paintList('b');
+    paintCompare();
+    scheduleSave();
+  }
+
+  function renderSetup() {
+    $('#sport').value = state.sport;
+    $('#country').value = state.country;
+    $('#currency').value = state.currency;
+  }
+
+  function renderCompareView() {
+    var el = $('#view-compare');
+    if (!state.b) { el.innerHTML = introHtml(); return; }
+    el.innerHTML = quickHtml() +
+      '<div class="layout"><div><div class="undo" id="undoB" role="status"></div><div class="list" id="itemsB" data-list="b"></div></div>' +
+      '<aside class="side" aria-label="Comparison"><div class="res" id="cmpRes"></div></aside></div>';
+    renderList('b');
+    paintCompare();
+  }
+
+  function renderAll() {
+    recalcA();
+    renderSetup();
+    paintToolbar();
+    renderList('a');
+    paintBanner();
+    paintResults();
+    paintBelow();
+    renderCompareView();
+    paintSaved();
+  }
+
+  /* Hero preview: a fixed snapshot of the hockey example, not the user's data. */
+  function renderLedger() {
+    var ex = makeItems('hockey', true);
+    var b = C.computeBudget(ex, { digits: 2 });
+    var f = function (m, whole) { return C.formatMoney(m, 'USD', 'en-US', whole ? { whole: true } : {}); };
+    var rank = b.ranking;
+    var rows = rank.slice(0, 6).map(function (id) {
+      return '<li><span>' + esc(CAT[id].short) + '</span><span class="amt">' + esc(f(b.byCategory[id].annualMinor, true)) + '</span></li>';
+    });
+    if (rank.length > 6) {
+      var rest = 0; rank.slice(6).forEach(function (id) { rest += b.byCategory[id].annualMinor; });
+      rows.push('<li><span>Everything else</span><span class="amt">' + esc(f(rest, true)) + '</span></li>');
+    }
+    var strip = rank.map(function (id) { return '<i style="flex:' + b.byCategory[id].annualMinor + '"></i>'; }).join('');
+    $('#ledger').innerHTML = '<div class="ledger-head"><strong>Youth ice hockey, one season</strong><span>Example amounts to show how it works. Not averages.</span></div>' +
+      '<ul class="ledger-rows">' + rows.join('') + '</ul>' +
+      '<div class="ledger-total"><div class="ledger-bar" aria-hidden="true">' + strip + '</div><div><p class="k">Cost per year</p><p class="big">' + esc(f(b.totals.annualMinor, true)) + '</p></div>' +
+      '<div class="ledger-sub"><div><p class="k">Average per month</p><p class="v">' + esc(f(b.totals.monthlyMinor, true)) + '</p></div><div><p class="k">Bought once</p><p class="v">' + esc(f(b.totals.upfrontMinor, true)) + '</p></div></div></div>';
+  }
+
+  function setView(v) {
+    view = v;
+    ['calc', 'compare'].forEach(function (k) {
+      var tab = $('#tab-' + k), panel = $('#view-' + k);
+      tab.setAttribute('aria-selected', String(k === v));
+      tab.tabIndex = k === v ? 0 : -1;
+      panel.hidden = k !== v;
+    });
+    if (v === 'compare') renderCompareView();
+    updateDock();
+  }
+
+  /* ---------- tooltip and dock ---------- */
+
+  var tipbox = null;
+  function showTip(el, x, y) {
+    var html = el.getAttribute('data-tip');
+    if (!html) return;
+    tipbox.innerHTML = '<b>' + html.replace('<br>', '</b>');
+    if (html.indexOf('<br>') < 0) tipbox.innerHTML = '<b>' + html + '</b>';
+    tipbox.classList.add('on');
+    var w = tipbox.offsetWidth, h = tipbox.offsetHeight;
+    var left = Math.min(Math.max(8, x + 14), window.innerWidth - w - 8);
+    var top = y + 16 + h > window.innerHeight ? y - h - 12 : y + 16;
+    tipbox.style.left = left + 'px';
+    tipbox.style.top = Math.max(8, top) + 'px';
+  }
+  function hideTip() { if (tipbox) tipbox.classList.remove('on'); }
+
+  var appVisible = false, resVisible = false;
+  function updateDock() {
+    var dock = $('#dock');
+    if (!dock) return;
+    dock.classList.toggle('on', appVisible && !resVisible && view === 'calc');
+  }
+
+  /* ---------- 5. events ---------- */
+
+  var armedTimers = {};
+  function twoStep(btn, key, armedLabel, action) {
+    if (armedTimers[key]) {
+      clearTimeout(armedTimers[key]); armedTimers[key] = null;
+      var was = btn.getAttribute('data-label');
+      if (was && document.body.contains(btn)) { btn.textContent = was; btn.classList.remove('btn-dark'); }
+      action();
+      return;
+    }
+    var orig = btn.textContent;
+    btn.setAttribute('data-label', orig);
+    btn.textContent = armedLabel;
+    btn.classList.add('btn-dark');
+    armedTimers[key] = setTimeout(function () {
+      armedTimers[key] = null;
+      if (document.body.contains(btn)) { btn.textContent = orig; btn.classList.remove('btn-dark'); }
+    }, 4000);
+  }
+
+  function markEdited(list) { if (list === 'a') state.example = false; }
+
+  function onInput(e) {
+    var t = e.target;
+    var f = t.getAttribute && t.getAttribute('data-f');
+    if (!f || f === 'freq') return;
+    var row = t.closest('.row'), root = t.closest('.list');
+    if (!row || !root) return;
+    var list = root.getAttribute('data-list');
+    var it = find(list === 'a' ? state.a : state.b, row.getAttribute('data-id'));
+    if (!it) return;
+    it[f] = t.value;
+    if (f === 'name') {
+      var rm = row.querySelector('[data-act="remove"]');
+      if (rm) rm.setAttribute('aria-label', 'Remove ' + (t.value || 'this item'));
+    }
+    markEdited(list);
+    if (list === 'a') {
+      if (f === 'name') { var had = bA.duplicates.length; recalcA(); if (had || bA.duplicates.length) paintList('a'); refreshA({ light: true }); return; }
+      refreshA();
+    } else refreshB();
+    if (state.example === false && list === 'a') paintToolbarIfNeeded();
+  }
+
+  var lastToolbarExample = null;
+  function paintToolbarIfNeeded() {
+    if (lastToolbarExample !== state.example) { lastToolbarExample = state.example; paintToolbar(); }
+  }
+
+  function onChange(e) {
+    var t = e.target;
+    if (t.getAttribute && t.getAttribute('data-f') === 'freq') {
+      var row = t.closest('.row'), root = t.closest('.list');
+      var list = root.getAttribute('data-list');
+      var items = list === 'a' ? state.a : state.b;
+      var it = find(items, row.getAttribute('data-id'));
+      if (!it) return;
+      it.freq = t.value;
+      it.count = '';
+      markEdited(list);
+      var budget = list === 'a' ? (recalcA(), bA) : budgetOf(state.b);
+      var idx = items.indexOf(it);
+      var tmp = document.createElement('div');
+      tmp.innerHTML = rowHtml(it, budget.items[idx], list, false);
+      var fresh = tmp.firstChild;
+      row.parentNode.replaceChild(fresh, row);
+      var sel = fresh.querySelector('select'); if (sel) sel.focus({ preventScroll: true });
+      if (list === 'a') refreshA(); else refreshB();
+      paintToolbarIfNeeded();
+      return;
+    }
+    if (t.id === 'sport') return onSportChange(t.value);
+    if (t.id === 'country') {
+      state.country = t.value;
+      state.currency = COUNTRY[t.value].cur;
+      $('#currency').value = state.currency;
+      renderAll(); scheduleSave(); return;
+    }
+    if (t.id === 'currency') { state.currency = t.value; renderAll(); scheduleSave(); }
+  }
+
+  function onSportChange(id) {
+    if (id === state.sport) return;
+    if (state.example || !hasAmounts(state.a)) {
+      state.sport = id; state.a = makeItems(id, false); state.b = null; state.example = false; ui.pendingSport = null;
+      renderAll(); scheduleSave();
+    } else {
+      ui.pendingSport = id;
+      state.sport = id;
+      paintBanner(); scheduleSave();
+    }
+  }
+
+  function removeItem(list, row, btn) {
+    var items = list === 'a' ? state.a : state.b;
+    var id = row.getAttribute('data-id');
+    var idx = -1;
+    for (var i = 0; i < items.length; i++) if (items[i].id === id) idx = i;
+    if (idx < 0) return;
+    var it = items.splice(idx, 1)[0];
+    ui.undo = { list: list, item: it, index: idx };
+    markEdited(list);
+    var cat = it.category;
+    if (list === 'a') refreshA({ rebuild: true }); else { renderList('b'); refreshB(); }
+    var addBtn = document.getElementById('add-' + list + '-' + cat);
+    if (addBtn) addBtn.focus({ preventScroll: true });
+    var box = $('#undo' + list.toUpperCase());
+    if (box) box.innerHTML = 'Removed “' + esc(it.name || 'item') + '”. <button type="button" class="btn btn-sm" data-act="undo">Undo</button>';
+    void btn;
+  }
+
+  function copy(text, label) {
+    var status = $('#copyStatus');
+    var ta = $('#exportText');
+    function fail() {
+      ta.value = text; ta.hidden = false; ta.focus(); ta.select();
+      status.textContent = 'Copying is blocked here. The text is selected below. Copy it with your keyboard.';
+      status.style.color = 'var(--ink-2)';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        ta.hidden = true; status.style.color = 'var(--ok)'; status.textContent = label + ' copied.';
+      }, fail);
+    } else fail();
+  }
+
+  function onClick(e) {
+    var seg = e.target.closest('[data-seg]');
+    if (seg) {
+      if (seg.getAttribute('data-seg') === 'break') { ui.breakMode = seg.getAttribute('data-mode'); paintResults(); }
+      else { ui.cmpMode = seg.getAttribute('data-mode'); paintCompare(); var b2 = $('[data-seg="cmp"][aria-pressed="true"]'); if (b2) b2.focus({ preventScroll: true }); }
+      return;
+    }
+    var go = e.target.closest('[data-go]');
+    if (go) { setView('calc'); }
+    var tab = e.target.closest('[data-view]');
+    if (tab) { setView(tab.getAttribute('data-view')); return; }
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act');
+    var list = btn.getAttribute('data-list');
+
+    if (act === 'add') {
+      var items = list === 'a' ? state.a : state.b;
+      var it = { id: uid(), category: btn.getAttribute('data-cat'), name: '', amount: '', freq: 'month', count: '' };
+      items.push(it);
+      markEdited(list);
+      if (list === 'a') refreshA({ rebuild: true }); else { renderList('b'); refreshB(); }
+      var input = document.getElementById('n-' + list + '-' + it.id);
+      if (input) input.focus();
+    } else if (act === 'remove') {
+      removeItem(list, btn.closest('.row'), btn);
+    } else if (act === 'undo') {
+      var u = ui.undo; if (!u) return;
+      var arr = u.list === 'a' ? state.a : state.b;
+      arr.splice(Math.min(u.index, arr.length), 0, u.item);
+      ui.undo = null;
+      var bx = $('#undo' + u.list.toUpperCase()); if (bx) bx.innerHTML = '';
+      if (u.list === 'a') refreshA({ rebuild: true }); else { renderList('b'); refreshB(); }
+    } else if (act === 'fill-example') {
+      state.a = makeItems('hockey', true); state.example = true; state.sport = 'hockey'; ui.pendingSport = null;
+      renderAll(); scheduleSave();
+    } else if (act === 'clear-amounts') {
+      twoStep(btn, 'clear', 'Click again to clear', function () {
+        state.a.forEach(function (i) { i.amount = ''; });
+        state.example = false;
+        renderAll(); scheduleSave();
+      });
+    } else if (act === 'replace-sport') {
+      state.a = makeItems(state.sport, false); state.b = null; state.example = false; ui.pendingSport = null;
+      renderAll(); scheduleSave();
+    } else if (act === 'keep-sport') {
+      ui.pendingSport = null; paintBanner();
+    } else if (act === 'copy-csv') {
+      copy(csvText(), 'CSV');
+    } else if (act === 'copy-summary') {
+      copy(summaryText(), 'Summary');
+    } else if (act === 'start-compare') {
+      state.b = state.a.map(function (i) { return { id: i.id, category: i.category, name: i.name, amount: i.amount, freq: i.freq, count: i.count }; });
+      renderCompareView(); scheduleSave();
+      var q = $('#qCat'); if (q) q.focus();
+    } else if (act === 'try-cut') {
+      state.b = C.scaleCategory(state.a, btn.getAttribute('data-cat'), -10, digits()).items.map(function (i) { return Object.assign({}, i); });
+      setView('compare');
+      renderCompareView(); scheduleSave();
+      var qc = $('#qCat'); if (qc) qc.value = btn.getAttribute('data-cat');
+      var top = $('#app'); if (top) top.scrollIntoView();
+    } else if (act === 'apply-quick') {
+      var pct = C.parseNumber($('#qPct').value);
+      var dir = $('#qDir').value;
+      var maxPct = dir === 'cut' ? 99 : 500;
+      var err = $('#qErr');
+      if (pct.error || pct.empty || pct.value <= 0 || pct.value > maxPct) {
+        err.textContent = 'Enter a percent from 1 to ' + maxPct + '.';
+        $('#qPct').setAttribute('aria-invalid', 'true'); return;
+      }
+      $('#qPct').removeAttribute('aria-invalid'); err.textContent = '';
+      var cat = $('#qCat').value;
+      var res = C.scaleCategory(state.b, cat, dir === 'cut' ? -pct.value : pct.value, digits());
+      if (!res.changed) { err.textContent = 'No readable amounts in ' + CAT[cat].label.toLowerCase() + ' to change.'; return; }
+      state.b = res.items;
+      renderList('b'); refreshB();
+      err.textContent = '';
+    } else if (act === 'match-a') {
+      twoStep(btn, 'match', 'Click again to reset', function () {
+        state.b = state.a.map(function (i) { return Object.assign({}, i); });
+        renderCompareView(); scheduleSave();
+      });
+    } else if (act === 'remove-b') {
+      twoStep(btn, 'dropb', 'Click again to remove', function () {
+        state.b = null; renderCompareView(); scheduleSave();
+      });
+    }
+  }
+
+  function onTabKey(e) {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    var next = view === 'calc' ? 'compare' : 'calc';
+    setView(next);
+    $('#tab-' + next).focus();
+  }
+
+  function init() {
+    try { localStorage.setItem('sportcost.test', '1'); localStorage.removeItem('sportcost.test'); } catch (e) { storageOk = false; }
+
+    var names = null;
+    try { names = new Intl.DisplayNames(['en'], { type: 'currency' }); } catch (e) { names = null; }
+    $('#sport').innerHTML = D.SPORTS.map(function (s) { return '<option value="' + s.id + '">' + esc(s.label) + '</option>'; }).join('');
+    $('#country').innerHTML = D.COUNTRIES.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('');
+    $('#currency').innerHTML = D.CURRENCIES.map(function (c) {
+      var n = ''; try { n = names ? names.of(c) : ''; } catch (e) { n = ''; }
+      return '<option value="' + c + '">' + c + (n && n !== c ? ', ' + esc(n) : '') + '</option>';
+    }).join('');
+
+    tipbox = $('#tipbox');
+    renderLedger();
+    renderAll();
+    lastToolbarExample = state.example;
+
+    document.addEventListener('input', onInput);
+    document.addEventListener('change', onChange);
+    document.addEventListener('click', onClick);
+    $('.tabs').addEventListener('keydown', onTabKey);
+    $('#resetBtn').addEventListener('click', function (e) {
+      twoStep(e.currentTarget, 'reset', 'Click again to reset', function () {
+        state = defaultState(); ui.pendingSport = null; ui.undo = null;
+        renderAll(); lastToolbarExample = true; scheduleSave();
+      });
+    });
+
+    document.addEventListener('pointerover', function (e) {
+      var el = e.target.closest && e.target.closest('[data-tip]');
+      if (el && e.pointerType !== 'touch') showTip(el, e.clientX, e.clientY);
+    });
+    document.addEventListener('pointermove', function (e) {
+      var el = e.target.closest && e.target.closest('[data-tip]');
+      if (el && e.pointerType !== 'touch') showTip(el, e.clientX, e.clientY); else hideTip();
+    });
+    document.addEventListener('pointerout', function (e) { if (e.target.closest && e.target.closest('[data-tip]')) hideTip(); });
+    document.addEventListener('focusin', function (e) {
+      var el = e.target.closest && e.target.closest('[data-tip]');
+      if (el) { var r = el.getBoundingClientRect(); showTip(el, r.left + 24, r.top); } else hideTip();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideTip(); });
+    window.addEventListener('scroll', hideTip, { passive: true });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) { appVisible = en[0].isIntersecting; updateDock(); }, { threshold: 0 }).observe($('#app'));
+      new IntersectionObserver(function (en) { resVisible = en[0].isIntersecting; updateDock(); }, { threshold: 0 }).observe($('#results'));
+    }
+  }
+
+  init();
+})();
+
+</script>
+
+</body></html>
